@@ -1,0 +1,668 @@
+{
+  "title": "GB/T31152—2014 汽车物流术语",
+  "sections": [
+    {
+      "heading": "封面",
+      "level": 1,
+      "content": "ICS01.040.01 A22 中华人民共和国国家标准 GB/T31152—2014 汽车物流术语 Automotive logistics terms 2014-09-03发布 2014-12-01实施 中华人民共和国国家质量监督检验检疫总局 中国国家标准化管理委员会 发布",
+      "subsections": []
+    },
+    {
+      "heading": "目次",
+      "level": 1,
+      "content": "前言 Ⅰ 引言 Ⅱ 1 范围 1 2 规范性引用文件 1 3 汽车物流基础术语 1 4 汽车物流作业服务术语 2 5 汽车物流技术与设施设备术语 6 6 汽车物流信息术语 7 7 汽车物流管理术语 8 附录A (规范性附录) GB/T18354—2006中适用于汽车物流的术语 10 参考文献 17 索引 18",
+      "subsections": []
+    },
+    {
+      "heading": "前言",
+      "level": 1,
+      "content": "本标准按照GB/T1.1—2009给出的规则起草。 本标准由全国物流标准化技术委员会(SAC/TC269)提出并归口。 本标准主要起草单位:中国物流与采购联合会汽车物流分会、安吉汽车物流有限公司、广州风神物流有限公司、神龙汽车有限公司、东风汽车有限公司、一汽轿车股份有限公司、北京长久物流股份有限公司。 本标准主要起草人:徐杰、章信开、陆薇、周啸、杨晓宇、袁自云、陈林政、邹懿、马增荣、左新宇。",
+      "subsections": []
+    },
+    {
+      "heading": "引言",
+      "level": 1,
+      "content": "汽车物流行业是伴随着汽车产业迅速发展而兴起的专业物流服务领域,具有多样性、创新性和广泛性的特点,许多汽车物流的技术、服务、组织等专用术语区别于其他物流服务对象。随着我国第三方汽车物流行业的迅速发展,汽车物流领域迫切需要一项规范的汽车物流术语标准。汽车物流术语的统一和规范,必将进一步推动产业的发展和升级。 本标准是在GB/T18354—2006的基础上,参考、借鉴了国内外相关标准和资料,收录并确定了汽车物流领域已基本成熟的术语及其定义,旨在规范我国汽车物流行业的基本概念,以适应汽车物流产业规范化发展及适时与国际接轨的需要。",
+      "subsections": []
+    },
+    {
+      "heading": "1 范围",
+      "level": 1,
+      "content": "本标准确定了汽车物流的基础术语、作业服务术语、设施设备术语、信息术语、管理术语及其定义。 本标准适用于汽车物流及相关领域的信息处理和信息交换。",
+      "subsections": []
+    },
+    {
+      "heading": "2 规范性引用文件",
+      "level": 1,
+      "content": "下列文件对于本文件的应用是必不可少的。凡是注日期的引用文件,仅注日期的版本适用于本文件。凡是不注日期的引用文件,其最新版本(包括所有的修改单)适用于本文件。 GB/T3730.1—2001 汽车和挂车类型的术语和定义 GB/T18354—2006 物流术语 GB/T26774—2011 车辆运输车通用技术条件",
+      "subsections": []
+    },
+    {
+      "heading": "3 汽车物流基础术语",
+      "level": 1,
+      "content": "GB/T3730.1—2001、GB/T18354—2006界定的及下列术语和定义适用于本文件。为方便使用,附录A 给出了GB/T18354—2006中适用于汽车物流领域的部分常用的术语条目及其相关信息。",
+      "subsections": [
+        {
+          "heading": "3.1 汽车 automobile",
+          "level": 2,
+          "content": "由动力驱动,具有四个或四个以上车轮的非轨道承载的车辆,主要用于:———载运人员和/或货物;———牵引载运人员和/或货物的车辆;———特殊用途。本术语还包括:a) 与电力线相联的车辆,如无轨电车;b) 整车整备质量超过400kg的三轮车辆。[GB/T3730.1—2001,定义2.1]",
+          "subsections": [
+            {
+              "heading": "3.1.1 汽车整车 finishedvehicle",
+              "level": 3,
+              "content": "装配完整的汽车。",
+              "subsections": []
+            },
+            {
+              "heading": "3.1.2 汽车零部件 automotiveparts",
+              "level": 3,
+              "content": "组成汽车整车的零件及部件。",
+              "subsections": []
+            },
+            {
+              "heading": "3.1.3 汽车售后服务备件 automotivespareparts",
+              "level": 3,
+              "content": "用于汽车售后服务的零件及部件。",
+              "subsections": []
+            }
+          ]
+        },
+        {
+          "heading": "3.2 物流 logistics",
+          "level": 2,
+          "content": "物品从供应地向接收地的实体流动过程。根据实际需要,将运输、储存、装卸、搬运、包装、流通加工、配送、信息处理等基本功能实施有机结合。[GB/T18354—2006,定义2.2]",
+          "subsections": []
+        },
+        {
+          "heading": "3.3 汽车物流 automotivelogistics",
+          "level": 2,
+          "content": "汽车整车、原材料、零部件、售后服务备件,从供应地向接收地的实体流动过程。根据实际需要,将运输、储存、装卸、搬运、包装、流通加工、配送、信息处理等基本功能实施有机结合。",
+          "subsections": []
+        },
+        {
+          "heading": "3.4 汽车整车物流 finishedvehiclelogistics",
+          "level": 2,
+          "content": "汽车整车因需要所发生的物流活动。",
+          "subsections": []
+        },
+        {
+          "heading": "3.5 汽车零部件物流 automotivepartslogistics",
+          "level": 2,
+          "content": "汽车零部件在采购和进入汽车总装环节前的物流活动。",
+          "subsections": []
+        },
+        {
+          "heading": "3.6 汽车售后服务备件物流 automotivesparepartslogistics",
+          "level": 2,
+          "content": "汽车售后服务备件因汽车售后服务需要所发生的物流活动。",
+          "subsections": []
+        },
+        {
+          "heading": "3.7 配送 distribution",
+          "level": 2,
+          "content": "在经济合理区域范围内,根据客户要求,对物品进行拣选、加工、包装、分割、组配等作业,并按时送达指定地点的物流活动。[GB/T18354—2006,定义2.13]",
+          "subsections": []
+        },
+        {
+          "heading": "3.8 汽车整车配送中心 finishedvehicledistributioncenter;VDC",
+          "level": 2,
+          "content": "从事汽车整车配送业务且具有完善信息系统的组织及场所。",
+          "subsections": []
+        },
+        {
+          "heading": "3.9 汽车整车储存中心 finishedvehiclestoragecenter;VSC",
+          "level": 2,
+          "content": "提供汽车整车储存、中转的组织及场所。",
+          "subsections": []
+        },
+        {
+          "heading": "3.10 汽车零部件集配中心 automotivepartscollectinganddistributingcenter;PDC",
+          "level": 2,
+          "content": "提供汽车零部件集货、配送业务的组织及场所。",
+          "subsections": []
+        },
+        {
+          "heading": "3.11 汽车售后服务备件配送中心 automotivesparepartsdistributioncenter",
+          "level": 2,
+          "content": "从事汽车售后服务备件配送业务且具有完善信息系统的组织及场所。",
+          "subsections": []
+        },
+        {
+          "heading": "3.12 循环取货模式 milk-rungoods-fetching",
+          "level": 2,
+          "content": "同一货运车辆按照预先设定的路线依次到多个取货点重复取货的作业模式。",
+          "subsections": []
+        }
+      ]
+    },
+    {
+      "heading": "4 汽车物流作业服务术语",
+      "level": 1,
+      "content": "",
+      "subsections": [
+        {
+          "heading": "4.1 交接 handover",
+          "level": 2,
+          "content": "汽车整车、零部件、售后服务备件在托运人、发货人、承运人、收货人,以及其他保管人之间按照约定内容移交的过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.2 质量交接 qualitycheckduringhandover",
+          "level": 2,
+          "content": "交接双方共同认定质损及责任的活动。",
+          "subsections": []
+        },
+        {
+          "heading": "4.3 质损 damage",
+          "level": 2,
+          "content": "汽车整车、零部件、售后服务备件存在损坏、缺失及出现非原厂规定件等质量问题。注1:包括物流质损与非物流质损。注2:零部件、售后服务备件损坏又称货损,零部件、售后服务备件缺失又称货差。",
+          "subsections": [
+            {
+              "heading": "4.3.1 物流质损 logisticsdamage",
+              "level": 3,
+              "content": "因物流活动造成的汽车整车、零部件、售后服务备件质损。",
+              "subsections": []
+            },
+            {
+              "heading": "4.3.2 非物流质损 non-logisticsdamage",
+              "level": 3,
+              "content": "非物流活动造成的汽车整车、零部件、售后服务备件质损。",
+              "subsections": []
+            }
+          ]
+        },
+        {
+          "heading": "4.4 隐形质损 concealeddamage",
+          "level": 2,
+          "content": "通过目测无法直观看到的质损。",
+          "subsections": []
+        },
+        {
+          "heading": "4.5 物流质损索赔 claimforlogisticsdamage",
+          "level": 2,
+          "content": "受经济损失方向物流责任方提出因物流质损造成损失的赔偿要求。",
+          "subsections": []
+        },
+        {
+          "heading": "4.6 交车 delivery",
+          "level": 2,
+          "content": "交车人将汽车整车交于接车人并得到确认的过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.7 接车 receiving",
+          "level": 2,
+          "content": "接车人从交车人处接收汽车整车并进行确认的过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.8 交车人 deliverer",
+          "level": 2,
+          "content": "交接时交付汽车整车的当事人。",
+          "subsections": []
+        },
+        {
+          "heading": "4.9 接车人 receiver",
+          "level": 2,
+          "content": "交接时接收汽车整车的当事人。",
+          "subsections": []
+        },
+        {
+          "heading": "4.10 质损车 damagedvehicle",
+          "level": 2,
+          "content": "有质损的汽车整车。包括物流质损车与非物流质损车。",
+          "subsections": [
+            {
+              "heading": "4.10.1 一般物流质损车 generaldamagedvehicleinlogistics",
+              "level": 3,
+              "content": "有修理价值且修理后能达到出厂标准,或符合委托人与物流服务商约定的一般质损的汽车。",
+              "subsections": []
+            },
+            {
+              "heading": "4.10.2 严重物流质损车 seriousdamagedvehicleinlogistics",
+              "level": 3,
+              "content": "有修理价值且修理后能达到国家有关规定但不能达到出厂标准,或符合委托人与物流服务商约定的严重质损的汽车。",
+              "subsections": []
+            },
+            {
+              "heading": "4.10.3 报废物流质损车 discardablevehicleinlogistics",
+              "level": 3,
+              "content": "已无修理价值,或经修理后达不到国家有关规定,或按制造商制定的报废标准规定必须报废的汽车。",
+              "subsections": []
+            },
+            {
+              "heading": "4.10.4 非物流质损车 non-logisticsdamagedvehicle",
+              "level": 3,
+              "content": "非物流活动造成的质损车。",
+              "subsections": []
+            }
+          ]
+        },
+        {
+          "heading": "4.11 质损件 damagedparts",
+          "level": 2,
+          "content": "有质损的汽车零部件或售后服务备件。包括物流质损件与非物流质损件。",
+          "subsections": []
+        },
+        {
+          "heading": "4.12 物流停线 logisticsline-stop",
+          "level": 2,
+          "content": "因物流原因造成的正常生产中断。",
+          "subsections": []
+        },
+        {
+          "heading": "4.13 上线包装 delivery-to-linepackage",
+          "level": 2,
+          "content": "生产线直接使用的汽车零部件包装活动。",
+          "subsections": []
+        },
+        {
+          "heading": "4.14 定位 location",
+          "level": 2,
+          "content": "将汽车整车从临时停放区域位移到仓库或运输设备的指定位置的作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.15 移位 translocation",
+          "level": 2,
+          "content": "将汽车整车从仓库或运输设备的指定位置位移到相应的另一个指定位置的作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.16 人工短驳 shorttransportationbydriving",
+          "level": 2,
+          "content": "通过自驾方式将汽车整车从一个地点位移到较近距离的另一个地点的作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.17 看板供给 kanbandelivery",
+          "level": 2,
+          "content": "根据看板卡信息将生产汽车所需零部件按时供给到生产线边存储区域或生产工位的一种供给方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.18 顺序供给 sequencedelivery",
+          "level": 2,
+          "content": "将汽车零部件按照生产顺序进行排序后供给至生产线边存储区域或生产工位的一种供给方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.19 巡视供给 arounddelivery",
+          "level": 2,
+          "content": "汽车零部件供给人员进行生产线边巡视,对缺货零部件进行补货的一种供给方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.20 周期供给 periodicdelivery",
+          "level": 2,
+          "content": "按预先设定好的时间间隔将汽车零部件供给至生产线边存储区域或生产工位的一种供给方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.21 成套供给 kitdelivery",
+          "level": 2,
+          "content": "将汽车零部件按照装配要求进行集配后供给至生产线边存储区域或生产工位的一种供给方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.22 台车置换供给 trolley-changingdelivery",
+          "level": 2,
+          "content": "对于用台车装载的汽车零部件按照以满换空的方式供给至生产线边存储区域或生产工位的一种供给方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.23 盘点 stocktaking",
+          "level": 2,
+          "content": "对实际数量与账面数量的核对、调整和处理的过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.24 循环盘点 cyclestocktaking",
+          "level": 2,
+          "content": "将零部件依照重要性区分成不同等级后赋予不同循环盘点码,进行周期性的盘点。",
+          "subsections": []
+        },
+        {
+          "heading": "4.25 报缺 out-of-stockreport",
+          "level": 2,
+          "content": "将缺货详情向相关方通报的行为。",
+          "subsections": []
+        },
+        {
+          "heading": "4.26 下线(后)检查 inspectionafterproductionline",
+          "level": 2,
+          "content": "对经生产厂质量检验合格的下线汽车整车进行的外观可视部分及附件的检查。",
+          "subsections": []
+        },
+        {
+          "heading": "4.27 动态维护 dynamicmaintenance",
+          "level": 2,
+          "content": "按规定要求对仓储汽车整车进行定期清洗、维护、保养等。",
+          "subsections": []
+        },
+        {
+          "heading": "4.28 售前质量检查 pre-deliveryinspection;PDI",
+          "level": 2,
+          "content": "对汽车整车进行交付前的外观、附件、功能等全面的质量检查。注:在仓储过程中又称为出库检查。",
+          "subsections": []
+        },
+        {
+          "heading": "4.29 装载 loading",
+          "level": 2,
+          "content": "将汽车整车、零部件或售后服务备件移动到运输设备上的相关作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.30 吊装 lifting",
+          "level": 2,
+          "content": "采用起重设备和吊具装卸汽车整车、零部件或售后服务备件的作业方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.31 配载 stowing",
+          "level": 2,
+          "content": "对即将装车的汽车整车、零部件或售后服务备件的堆码方法、装载顺序等进行合理安排的作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.32 固定 fixing",
+          "level": 2,
+          "content": "在运输设备上使用固定器具防止汽车整车、零部件或售后服务备件位置移动的作业。",
+          "subsections": []
+        },
+        {
+          "heading": "4.33 卸载 unloading",
+          "level": 2,
+          "content": "将汽车整车、零部件或售后服务备件从运输设备上移动并脱离的相关作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.34 积载 stowage",
+          "level": 2,
+          "content": "对汽车整车、零部件或售后服务备件在运输船上的摆放位置与堆装方式作出合理安排的作业过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.35 滚装 ro-ro",
+          "level": 2,
+          "content": "货物单元在码头接岸设施与船舶之间通过其自身的车轮或其他滚动系统进行装卸的作业方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.36 混载 mixedload",
+          "level": 2,
+          "content": "对汽车零部件或售后服务备件进行混合装载的方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.37 自主卸货 self-unloading",
+          "level": 2,
+          "content": "由司机进行卸货操作的作业方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.38 托运 consignment",
+          "level": 2,
+          "content": "发货人与运输企业签订货物运输合同,以便实现货物空间位移的活动。",
+          "subsections": []
+        },
+        {
+          "heading": "4.39 在途 intransit",
+          "level": 2,
+          "content": "汽车整车、零部件、售后服务备件从运输起始地至目的地之间的作业状态。",
+          "subsections": []
+        },
+        {
+          "heading": "4.40 干线运输 main-linetransport",
+          "level": 2,
+          "content": "大批量的汽车零部件、售后服务备件,通过铁路、公路,或水路干线进行长距离的运输过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.41 支线运输 sub-linetransport",
+          "level": 2,
+          "content": "汽车零部件、售后服务备件短距离的运输过程。",
+          "subsections": []
+        },
+        {
+          "heading": "4.42 直送运输 directdistributiontransport",
+          "level": 2,
+          "content": "把汽车零部件直接从供应商或供应商零部件仓库运输到汽车生产企业的运输方式。",
+          "subsections": []
+        },
+        {
+          "heading": "4.43 试运输 trialtransport",
+          "level": 2,
+          "content": "批量运输实施前,对汽车物流的包装方式、固定方式、运输线路等进行测试而进行的运输作业。",
+          "subsections": []
+        },
+        {
+          "heading": "4.44 汽车零部件运输提前期 automotivepartstransportlead-time",
+          "level": 2,
+          "content": "根据起运地区域分布、运输距离、货量大小、目的地、交付时间等条件设定的,预留给汽车零部件运输的相对固定的时间。",
+          "subsections": []
+        }
+      ]
+    },
+    {
+      "heading": "5 汽车物流技术与设施设备术语",
+      "level": 1,
+      "content": "",
+      "subsections": [
+        {
+          "heading": "5.1 检验棚 inspectioncanopy",
+          "level": 2,
+          "content": "对汽车整车外观、附件进行检验,或进行售前质量检查的,带有顶棚、灯光等检验必需设施的场所。",
+          "subsections": []
+        },
+        {
+          "heading": "5.2 检测线 detectionline",
+          "level": 2,
+          "content": "分工位对汽车整车进行售前质量检查的,带有顶棚、灯光等检验必需设施的场所。",
+          "subsections": []
+        },
+        {
+          "heading": "5.3 跳板 quayramp",
+          "level": 2,
+          "content": "连接运输设备各层与地面的专用的板。",
+          "subsections": []
+        },
+        {
+          "heading": "5.4 坡道 slopeway",
+          "level": 2,
+          "content": "连接运输设备各层与地面的倾斜通道。",
+          "subsections": []
+        },
+        {
+          "heading": "5.5 车辆运输车 carcarrier",
+          "level": 2,
+          "content": "专门为运输汽车设计的货车、挂车及列车的专用车辆。[GB/T26774—2011,定义3.1]",
+          "subsections": []
+        },
+        {
+          "heading": "5.6 滚装船 ro-rovessel",
+          "level": 2,
+          "content": "允许货物单元以滚装方式进行装卸的船舶。",
+          "subsections": []
+        },
+        {
+          "heading": "5.7 汽车专用铁运货车 motorvehiclespecialpurposerailwayfreightcar",
+          "level": 2,
+          "content": "用于汽车整车铁路运输的,具有单层或多层货台的专用货车。",
+          "subsections": []
+        },
+        {
+          "heading": "5.8 汽车专用铁运集装箱 motorvehiclespecialpurposerailwaycontainers",
+          "level": 2,
+          "content": "用于汽车整车铁路运输的,具有单层或多层货台的专用集装箱。",
+          "subsections": []
+        },
+        {
+          "heading": "5.9 展翼车 movablewingstruck",
+          "level": 2,
+          "content": "车厢单侧或两侧可通过液压或者铰链装置展开的一种全封闭厢式卡车。",
+          "subsections": []
+        },
+        {
+          "heading": "5.10 看板卡 kanbancard",
+          "level": 2,
+          "content": "汽车生产物流过程中使用的,标识了即将供给上线汽车零部件代码、数量、时刻等信息的实物卡片或电子卡片。",
+          "subsections": []
+        },
+        {
+          "heading": "5.11 台车 trolley",
+          "level": 2,
+          "content": "由脚轮和平板构成的无动力搬运车辆。",
+          "subsections": []
+        }
+      ]
+    },
+    {
+      "heading": "6 汽车物流信息术语",
+      "level": 1,
+      "content": "",
+      "subsections": [
+        {
+          "heading": "6.1 质损代码 damagecode",
+          "level": 2,
+          "content": "用于规范、统一质损描述,由英文字母及数字组成的一组有规律的代码。",
+          "subsections": []
+        },
+        {
+          "heading": "6.2 标准包装量 standardnumberofpackage",
+          "level": 2,
+          "content": "单个包装所容纳汽车零部件的标准设定数量。",
+          "subsections": []
+        },
+        {
+          "heading": "6.3 仓储指令 warehouseinstructions",
+          "level": 2,
+          "content": "传达给仓储方的一组仓储信息,包括货物、交货人、收货人、时间等。",
+          "subsections": []
+        },
+        {
+          "heading": "6.4 虚拟仓库 virtualwarehouse",
+          "level": 2,
+          "content": "在计算机和网络通讯技术基础上,进行物品储存、保管和远程控制的虚拟物流设施。可实现不同状态、空间、时间、货主的有效调度和统一管理。",
+          "subsections": []
+        },
+        {
+          "heading": "6.5 运输指令 transportationinstructions",
+          "level": 2,
+          "content": "传达给承运人的一组运输信息,包括货物、交货人、收货人、时间等。",
+          "subsections": []
+        },
+        {
+          "heading": "6.6 交付日期 deliverydate",
+          "level": 2,
+          "content": "预先设定的汽车整车、零部件或售后服务备件交付到目的地的日期。",
+          "subsections": []
+        },
+        {
+          "heading": "6.7 交付时间 deliverytime",
+          "level": 2,
+          "content": "预先设定的汽车零部件交付的时间点。",
+          "subsections": []
+        },
+        {
+          "heading": "6.8 供应商交互平台 supplierinteractionplatform",
+          "level": 2,
+          "content": "零部件供应商和物流供应商共同使用以查阅订单、运输、库存、结算等信息的信息系统。",
+          "subsections": []
+        }
+      ]
+    },
+    {
+      "heading": "7 汽车物流管理术语",
+      "level": 1,
+      "content": "",
+      "subsections": [
+        {
+          "heading": "7.1 运输质损率 damagerateintransportation",
+          "level": 2,
+          "content": "考核期内,有运输质损的汽车整车、零部件或售后服务备件数量与承运总数量的比率。",
+          "subsections": []
+        },
+        {
+          "heading": "7.2 仓储质损率 damagerateinwarehouse",
+          "level": 2,
+          "content": "考核期内,有仓储质损的汽车整车、零部件或售后服务备件数量与仓储总量的比率。仓储总量为考核期末库存总数量与考核期内出库总数量之和。",
+          "subsections": []
+        },
+        {
+          "heading": "7.3 包装周转量 packagecirclingnumber",
+          "level": 2,
+          "content": "汽车零部件、售后服务备件使用的周转包装的数量。",
+          "subsections": []
+        },
+        {
+          "heading": "7.4 准时制 just-in-time",
+          "level": 2,
+          "content": "在必需的时间将必要的汽车零部件按必要的数量送到生产线边的方式。",
+          "subsections": []
+        },
+        {
+          "heading": "7.5 库存控制 inventorycontrol",
+          "level": 2,
+          "content": "以库存物品进行的计划、组织、协调、监控等一系列的活动。",
+          "subsections": []
+        },
+        {
+          "heading": "7.6 空驶率 empty-loadedrate",
+          "level": 2,
+          "content": "考核期内,空驶行程占总行程的比率。",
+          "subsections": []
+        },
+        {
+          "heading": "7.7 运输准时率 on-time-deliveryrate",
+          "level": 2,
+          "content": "考核期内,按商定运输时间完成的汽车整车、零部件或售后服务备件数量与承运总数量的比率。",
+          "subsections": []
+        },
+        {
+          "heading": "7.8 标准工作时间 standardtime",
+          "level": 2,
+          "content": "以标准的作业方法、作业速度和合理的劳动强度完成符合质量要求的工作所需的作业时间。",
+          "subsections": []
+        },
+        {
+          "heading": "7.9 标准作业遵守率 adherenceratetostandardoperation",
+          "level": 2,
+          "content": "遵守标准作业要求的数量与作业总数量的比率。",
+          "subsections": []
+        },
+        {
+          "heading": "7.10 单车物流成本 logisticscostspercar",
+          "level": 2,
+          "content": "汽车物流成本分摊到单台汽车整车上的物流成本的统称。",
+          "subsections": []
+        },
+        {
+          "heading": "7.11 装载率 loadingefficiency",
+          "level": 2,
+          "content": "运输车辆实际装载汽车整车、零部件或售后服务备件数量、体积或重量占该车辆理论装载数量、体积或重量的比率。",
+          "subsections": []
+        },
+        {
+          "heading": "7.12 货损率 partsdamagerate",
+          "level": 2,
+          "content": "考核期内,货损件数量或价值占所有汽车零部件或售后服务备件数量(或价值)的比率。",
+          "subsections": []
+        }
+      ]
+    },
+    {
+      "heading": "附录A (规范性附录) GB/T18354—2006中适用于汽车物流的术语",
+      "level": 1,
+      "content": "表A.1给出了GB/T18354—2006中适用于汽车物流的术语名称及其在GB/T18354—2006中的条款号与分类。",
+      "subsections": [
+        {
+          "heading": "表A.1 GB/T18354—2006中适用于汽车物流的术语",
+          "level": 2,
+          "content": "序号 术语 对应条款号 分类 | 1 物流 2.2 物流基础术语 | 2 物流活动 2.3 物流基础术语 | 3 物流管理 2.4 物流基础术语 | 4 供应链 2.5 物流基础术语 | 5 供应链管理 2.6 物流基础术语 | 6 物流服务 2.7 物流基础术语 | 7 一体化物流服务 2.8 物流基础术语 | 8 第三方物流 2.9 物流基础术语 | 9 物流设施 2.10 物流基础术语 | 10 物流中心 2.11 物流基础术语 | 11 区域物流中心 2.12 物流基础术语 | 12 配送 2.13 物流基础术语 | 13 物流园区 2.15 物流基础术语 | 14 物流企业 2.16 物流基础术语 | 15 物流合同 2.18 物流基础术语 | 16 物流模数 2.19 物流基础术语 | 17 物流技术 2.20 物流基础术语 | 18 物流成本 2.21 物流基础术语 | 19 物流网络 2.22 物流基础术语 | 20 物流信息 2.23 物流基础术语 | 21 物流联盟 2.24 物流基础术语 | 22 企业物流 2.25 物流基础术语 | 23 军事物流 2.29 物流基础术语 | 24 国际物流 2.30 物流基础术语 | 25 精益物流 2.31 物流基础术语 | 26 逆向物流 2.32 物流基础术语 | 27 应急物流 2.37 物流基础术语 | 28 托运人 3.1 物流作业服务术语 | 29 承运人 3.2 物流作业服务术语 | 30 运输 3.3 物流作业服务术语 | 31 门到门运输服务 3.4 物流作业服务术语 | 32 直达运输 3.5 物流作业服务术语 | 33 中转运输 3.6 物流作业服务术语 | 34 甩挂运输 3.7 物流作业服务术语 | 35 联合运输 3.10 物流作业服务术语 | 36 多式联运 3.11 物流作业服务术语 | 37 仓储 3.12 物流作业服务术语 | 38 储存 3.13 物流作业服务术语 | 39 仓库空间利用率 3.14 物流作业服务术语 | 40 仓库面积利用率 3.15 物流作业服务术语 | 41 仓库地面载荷利用率 3.16 物流作业服务术语 | 42 仓库货物周转率 3.17 物流作业服务术语 | 43 车辆空驶率 3.18 物流作业服务术语 | 44 库存 3.19 物流作业服务术语 | 45 存货成本 3.20 物流作业服务术语 | 46 保管 3.21 物流作业服务术语 | 47 仓储费用 3.25 物流作业服务术语 | 48 货垛 3.26 物流作业服务术语 | 49 堆码 3.27 物流作业服务术语 | 50 拣选 3.28 物流作业服务术语 | 51 物品分类 3.29 物流作业服务术语 | 52 集货 3.30 物流作业服务术语 | 53 共同配送 3.31 物流作业服务术语 | 54 装卸 3.32 物流作业服务术语 | 55 搬运 3.33 物流作业服务术语 | 56 包装 3.34 物流作业服务术语 | 57 销售包装 3.35 物流作业服务术语 | 58 运输包装 3.36 物流作业服务术语 | 59 流通加工 3.37 物流作业服务术语 | 60 增值物流服务 3.38 物流作业服务术语 | 61 定制物流 3.39 物流作业服务术语 | 62 物流服务质量 3.41 物流作业服务术语 | 63 物品储备 3.42 物流作业服务术语 | 64 订单满足率 3.43 物流作业服务术语 | 65 缺货率 3.44 物流作业服务术语 | 66 商品完好率 3.46 物流作业服务术语 | 67 基本运价 3.47 物流作业服务术语 | 68 理货 3.48 物流作业服务术语 | 69 组配货 3.49 物流作业服务术语 | 70 订货周期 3.50 物流作业服务术语 | 71 库存周期 3.51 物流作业服务术语 | 72 集装单元 4.1 物流技术与设施设备术语 | 73 集装单元器具 4.2 物流技术与设施设备术语 | 74 集装化 4.3 物流技术与设施设备术语 | 75 散装化 4.4 物流技术与设施设备术语 | 76 集装箱 4.5 物流技术与设施设备术语 | 77 标准箱 4.6 物流技术与设施设备术语 | 78 集装袋 4.7 物流技术与设施设备术语 | 79 周转箱 4.8 物流技术与设施设备术语 | 80 自备箱 4.9 物流技术与设施设备术语 | 81 托盘 4.10 物流技术与设施设备术语 | 82 集装运输 4.11 物流技术与设施设备术语 | 83 托盘作业一贯化 4.12 物流技术与设施设备术语 | 84 单元装卸 4.13 物流技术与设施设备术语 | 85 码盘作业 4.14 物流技术与设施设备术语 | 86 托盘共用系统 4.15 物流技术与设施设备术语 | 87 零库存技术 4.16 物流技术与设施设备术语 | 88 分拣输送系统 4.17 物流技术与设施设备术语 | 89 自动补货 4.18 物流技术与设施设备术语 | 90 直接换装 4.19 物流技术与设施设备术语 | 91 交通枢纽 4.21 物流技术与设施设备术语 | 92 集装箱货运站 4.22 物流技术与设施设备术语 | 93 集装箱码头 4.23 物流技术与设施设备术语 | 94 基本港口 4.24 物流技术与设施设备术语 | 95 全集装箱船 4.25 物流技术与设施设备术语 | 96 铁路专用线 4.26 物流技术与设施设备术语 | 97 自营仓库 4.27 物流技术与设施设备术语 | 98 公共仓库 4.28 物流技术与设施设备术语 | 99 自动化立体仓库 4.29 物流技术与设施设备术语 | 100 控湿储存区 4.30 物流技术与设施设备术语 | 101 收货区 4.34 物流技术与设施设备术语 | 102 理货区 4.35 物流技术与设施设备术语 | 103 叉车 4.36 物流技术与设施设备术语 | 104 叉车属具 4.37 物流技术与设施设备术语 | 105 称量装置 4.38 物流技术与设施设备术语 | 106 货架 4.39 物流技术与设施设备术语 | 107 重力式货架 4.40 物流技术与设施设备术语 | 108 移动式货架 4.41 物流技术与设施设备术语 | 109 驶入式货架 4.42 物流技术与设施设备术语 | 110 码垛机器人 4.43 物流技术与设施设备术语 | 111 起重机械 4.44 物流技术与设施设备术语 | 112 牵引车 4.45 物流技术与设施设备术语 | 113 升降台 4.46 物流技术与设施设备术语 | 114 手动液压升降平台车 4.47 物流技术与设施设备术语 | 115 输送机 4.48 物流技术与设施设备术语 | 116 箱式车 4.49 物流技术与设施设备术语 | 117 自动导引车 4.50 物流技术与设施设备术语 | 118 站台登车桥 4.51 物流技术与设施设备术语 | 119 物流信息编码 5.1 物流信息术语 | 120 货物编码 5.2 物流信息术语 | 121 条码 5.3 物流信息术语 | 122 二维码 5.4 物流信息术语 | 123 物流单元 5.5 物流信息术语 | 124 物流标签 5.6 物流信息术语 | 125 商品标识代码 5.7 物流信息术语 | 126 全国产品与服务统一代码 5.8 物流信息术语 | 127 产品电子代码 5.9 物流信息术语 | 128 产品电子代码系统 5.10 物流信息术语 | 129 全球位置码 5.11 物流信息术语 | 130 全球贸易项目标识代码 5.12 物流信息术语 | 131 系列货运包装箱代码 5.14 物流信息术语 | 132 单个资产标识代码 5.15 物流信息术语 | 133 可回收资产标识代码 5.16 物流信息术语 | 134 自动识别与数据采集 5.17 物流信息术语 | 135 条码自动识别技术 5.18 物流信息术语 | 136 条码系统 5.19 物流信息术语 | 137 射频识别 5.20 物流信息术语 | 138 射频识别系统 5.21 物流信息术语 | 139 电子数据交换 5.22 物流信息术语 | 140 电子通关 5.23 物流信息术语 | 141 电子认证 5.24 物流信息术语 | 142 电子报表 5.25 物流信息术语 | 143 电子采购 5.26 物流信息术语 | 144 电子商务 5.27 物流信息术语 | 145 地理信息系统 5.28",
+          "subsections": []
+        }
+      ]
+    }
+  ]
+}
