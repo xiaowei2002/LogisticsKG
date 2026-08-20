@@ -1,12 +1,11 @@
-"""上传知识图谱到 Neo4j 数据库的工具。"""
-import logging
+"""上传知识图谱到Neo4j数据库"""
 import re
+import os
+from dotenv import load_dotenv
+from loguru import logger
 from typing import Optional, Dict, Any, List
 from neo4j import GraphDatabase, Driver
-from ..models import Graph
-
-
-logger = logging.getLogger(__name__)
+from src.models import Graph
 
 
 def _sanitize_rel_type(predicate: str) -> str:
@@ -25,13 +24,12 @@ def _sanitize_rel_type(predicate: str) -> str:
 
 class Neo4jUploader:
     """负责将知识图谱上传到 Neo4j 数据库。"""
-
     def __init__(self, uri: str, username: str, password: str, database: str = "neo4j"):
         """
         初始化 Neo4j 连接。
 
         Args:
-            uri: Neo4j 连接 URI（如 'bolt://localhost:7687' 或 'neo4j+s://...' 用于 AuraDB）
+            uri: Neo4j 连接 URI
             username: 数据库用户名
             password: 数据库密码
             database: 数据库名（默认 'neo4j'）
@@ -204,7 +202,6 @@ def upload_to_neo4j(
     clear_existing: bool = False,
     add_properties: Optional[Dict[str, Any]] = None,
 ) -> bool:
-    """上传图谱到 Neo4j 的便捷函数。"""
     uploader = Neo4jUploader(uri, username, password, database)
 
     try:
@@ -215,14 +212,6 @@ def upload_to_neo4j(
         return False
     finally:
         uploader.close()
-
-
-def get_aura_connection_config(
-    instance_id: str, username: str, password: str, region: str = "us-east-1"
-) -> Dict[str, str]:
-    """获取 Neo4j AuraDB 的连接配置。"""
-    uri = f"neo4j+s://{instance_id}.databases.neo4j.io"
-    return {"uri": uri, "username": username, "password": password, "database": "neo4j"}
 
 
 def get_local_connection_config(
@@ -237,10 +226,6 @@ def get_local_connection_config(
 
 
 if __name__ == "__main__":
-    import os
-
-    from dotenv import load_dotenv
-
     load_dotenv()
 
     graph = Graph(
@@ -256,13 +241,27 @@ if __name__ == "__main__":
         password=os.getenv("NEO4J_PASSWORD", "password"),
     )
 
-    success = upload_to_neo4j(
-        graph,
-        uri=config["uri"],
-        username=config["username"],
-        password=config["password"],
-        database=config["database"],
-        graph_name="test",
-        clear_existing=True,
-    )
-    print(f"上传结果: {success}")
+    # 测试数据库连接
+    uploader = Neo4jUploader(**config)
+    try:
+        if uploader.connect():
+            logger.info("连接到Neo4j数据库...")
+            # 上传图谱到数据库
+            success = upload_to_neo4j(
+                graph,
+                uri=config["uri"],
+                username=config["username"],
+                password=config["password"],
+                database=config["database"],
+                graph_name="test",
+                clear_existing=True,
+            )
+            print(f"上传结果: {success}")
+        else:
+            logger.info("连接失败...")
+
+    finally:
+        uploader.close()
+        logger.info("断开数据库连接...")
+
+

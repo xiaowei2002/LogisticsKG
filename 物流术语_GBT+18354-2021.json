@@ -1,0 +1,1255 @@
+{
+  "title": "物流术语",
+  "sections": [
+    {
+      "heading": "3.1 物品 goods",
+      "level": 2,
+      "content": "货物\n经济与社会活动中实体流动的物质资料。\n"
+    },
+    {
+      "heading": "3.2 物流 logistics",
+      "level": 2,
+      "content": "根据实际需要，将运输、储存、装卸、搬运、包装、流通加工、配送、信息处理等基本功能实施有机结合，使物品从供应地向接收地进行实体流动的过程。\n"
+    },
+    {
+      "heading": "3.3 配送 distribution",
+      "level": 2,
+      "content": "根据客户要求，对物品进行分类、拣选、集货、包装、组配等作业，并按时送达指定地点的物流活动。\n"
+    },
+    {
+      "heading": "3.4 物流管理 logistics management",
+      "level": 2,
+      "content": "为达到既定的目标，从物流全过程出发，对相关物流活动进行的计划、组织、协调与控制。\n"
+    },
+    {
+      "heading": "3.5 物流服务 logistics service",
+      "level": 2,
+      "content": "为满足客户物流需求所实施的一系列物流活动过程及其产生的结果。\n"
+    },
+    {
+      "heading": "3.6 一体化物流服务 integrated logistics service",
+      "level": 2,
+      "content": "根据客户物流需求所提供的全过程、多功能的物流服务。\n"
+    },
+    {
+      "heading": "3.7 第三方物流 third party logistics",
+      "level": 2,
+      "content": "由独立于物流服务供需双方之外且以物流服务为主营业务的组织提供物流服务的模式。\n"
+    },
+    {
+      "heading": "3.8 供应链 supply chain",
+      "level": 2,
+      "content": "生产及流通过程中，围绕核心企业的核心产品或服务，由所涉及的原材料供应商、制造商、分销商、\n零售商直到最终用户等形成的网链结构。\n[来源:GB/T 26337.2—2011,2.1,有修改]\n"
+    },
+    {
+      "heading": "3.9 供应链管理 supply chain management",
+      "level": 2,
+      "content": "从供应链整体目标出发，对供应链中采购、生产、销售各环节的商流、物流、信息流及资金流进行统一计划、组织、协调、控制的活动和过程。\n[来源:GB/T 26337.2—2011,2.2,有修改]\n"
+    },
+    {
+      "heading": "3.10 供应链服务 supply chain service",
+      "level": 2,
+      "content": "面向客户上下游业务，应用现代管理和技术手段，对其商流、物流、信息流和资金流进行整合和优化，形成以共享、开放、协同等为特征，为客户创造价值的经济活动。\n"
+    },
+    {
+      "heading": "3.11 物流节点 logistics node",
+      "level": 2,
+      "content": "具有与所承担物流功能相配套的基础设施和所要求的物流运营能力相适应的运营体系的物流场所和组织。\n"
+    },
+    {
+      "heading": "3.12 物流网络 logistics network",
+      "level": 2,
+      "content": "通过交通运输线路连接分布在一定区域的不同物流节点所形成的系统。\n"
+    },
+    {
+      "heading": "3.13 物流中心 logistics center",
+      "level": 2,
+      "content": "具有完善的物流设施及信息网络，可便捷地连接外部交通运输网络，物流功能健全，集聚辐射范围大，存储、吞吐能力强，为客户提供专业化公共物流服务的场所。\n"
+    },
+    {
+      "heading": "3.14 配送中心 distribution center;DC",
+      "level": 2,
+      "content": "具有完善的配送基础设施和信息网络，可便捷地连接对外交通运输网络，并向末端客户提供短距离、小批量、多批次配送服务的专业化配送场所。\n"
+    },
+    {
+      "heading": "3.15 区域配送中心 regional distribution center;RDC",
+      "level": 2,
+      "content": "具有完善的配送基础设施和信息网络，可便捷地连接对外交通运输网络，配送及中转功能齐全，集聚辐射范围大，存储、吞吐能力强，向下游配送中心提供专业化统一配送服务的场所。\n"
+    },
+    {
+      "heading": "3.16 物流园区 logistics park",
+      "level": 2,
+      "content": "由政府规划并由统一主体管理，为众多企业在此设立配送中心或区域配送中心等，提供专业化物流基础设施和公共服务的物流产业集聚区。\n"
+    },
+    {
+      "heading": "3.17 物流枢纽 logistics hub",
+      "level": 2,
+      "content": "具备较大规模配套的专业物流基础设施和完善的信息网络，通过多种运输方式便捷地连接外部交通运输网络，物流功能和服务体系完善并集中实现货物集散、存储、分拨、转运等多种功能，辐射较大范围物流网络的公共物流节点。\n"
+    },
+    {
+      "heading": "3.18 物流企业 logistics service provider",
+      "level": 2,
+      "content": "从事物流基本功能范围内的物流业务设计及系统运作，具有与自身业务相适应的信息管理系统，实行独立核算、独立承担民事责任的经济组织。\n"
+    },
+    {
+      "heading": "3.19 物流合同 logistics contract",
+      "level": 3,
+      "content": "物流企业与客户之间达成的物流相关服务协议。\n"
+    },
+    {
+      "heading": "3.20 包装模数 package module",
+      "level": 3,
+      "content": "包装容器长和宽的尺寸基数。\n[来源：GB/T 4122.1—2008,2.36,有修改]\n"
+    },
+    {
+      "heading": "3.21 物流模数 logistics modulo",
+      "level": 3,
+      "content": "物流设施、设备或货物包装的尺寸基数。\n"
+    },
+    {
+      "heading": "3.22 物流技术 logistics technology",
+      "level": 3,
+      "content": "物流活动中所采用的自然科学与社会科学方面的理论、方法，以及设施、设备、装置与工艺的总称。\n"
+    },
+    {
+      "heading": "3.23 物流成本 logistics cost",
+      "level": 3,
+      "content": "物流活动中所消耗的物化劳动和活劳动的货币表现。\n"
+    },
+    {
+      "heading": "3.24 物流信息 logistics information",
+      "level": 3,
+      "content": "反映物流各种活动内容的知识、资料、图像、数据的总称。\n"
+    },
+    {
+      "heading": "3.25 物流联盟 logistics alliance",
+      "level": 3,
+      "content": "两个或两个以上的经济组织为实现特定的物流目标而形成的长期联合与合作的组织形式。\n"
+    },
+    {
+      "heading": "3.26 企业物流 enterprise logistics",
+      "level": 3,
+      "content": "生产和流通企业围绕其经营活动所发生的物流活动。\n"
+    },
+    {
+      "heading": "3.27 供应物流 supply logistics",
+      "level": 3,
+      "content": "为生产企业提供原材料、零部件或其他物料时所发生的物流活动。\n"
+    },
+    {
+      "heading": "3.28 生产物流 production logistics",
+      "level": 3,
+      "content": "生产企业内部进行的涉及原材料、在制品、半成品、产成品等的物流活动。\n"
+    },
+    {
+      "heading": "3.29 销售物流 distribution logistics",
+      "level": 3,
+      "content": "企业在销售商品过程中所发生的物流活动。\n"
+    },
+    {
+      "heading": "3.30 军事物流 military logistics",
+      "level": 3,
+      "content": "用于满足平时、战时及应急状态下军事行动物资需求的物流活动。\n"
+    },
+    {
+      "heading": "3.31 际物流 international logistics",
+      "level": 3,
+      "content": "跨越不同国家（地区）之间的物流活动。\n"
+    },
+    {
+      "heading": "3.32 精益物流 lean logistics",
+      "level": 3,
+      "content": "消除物流过程中的无效和非增值作业，用尽量少的投入满足客户需求，并获得高效率、高效益的物\nGB/T 18354—2021\n流活动。\n"
+    },
+    {
+      "heading": "绿色物流 green logistics",
+      "level": 3,
+      "content": "通过充分利用物流资源、采用先进的物流技术，合理规划和实施运输、储存、装卸、搬运、包装、流通加工、配送、信息处理等物流活动，降低物流活动对环境影响的过程。\n[来源：GB/T GB/T 37099—2018,3.1]\n"
+    },
+    {
+      "heading": "智慧物流 smart logistics",
+      "level": 3,
+      "content": "以物联网技术为基础，综合运用大数据、云计算、区块链及相关信息技术，通过全面感知、识别、跟踪物流作业状态，实现实时应对、智能优化决策的物流服务系统。\n"
+    },
+    {
+      "heading": "逆向物流 reverse logistics",
+      "level": 3,
+      "content": "反向物流\n为恢复物品价值、循环利用或合理处置，对原材料、零部件、在制品及产成品从供应链下游节点向上游节点反向流动，或按特定的渠道或方式归集到指定地点所进行的物流活动。\n"
+    },
+    {
+      "heading": "废弃物流 waste logistics",
+      "level": 3,
+      "content": "将经济活动或人民生活中失去原有使用价值的物品，根据实际需要进行收集、分类、加工、包装、搬运、储存等，并分送到专门处理场所的物流活动。\n"
+    },
+    {
+      "heading": "军地物流一体化 integration of military logistics and civil logistics",
+      "level": 3,
+      "content": "对军队物流与地方物流进行有效的动员和整合，实现军地物流的统一、融合和协调发展。\n"
+    },
+    {
+      "heading": "应急物流 emergency logistics",
+      "level": 3,
+      "content": "为应对突发事件提供应急生产物资、生活物资供应保障的物流活动。\n"
+    },
+    {
+      "heading": "运输 transport",
+      "level": 3,
+      "content": "利用载运工具、设施设备及人力等运力资源，使货物在较大空间上产生位置移动的活动。\n"
+    },
+    {
+      "heading": "发货人 consignor",
+      "level": 3,
+      "content": "按运输合同将货物交付承运人运送的单位、个人或其受托人、代理人。\n"
+    },
+    {
+      "heading": "收货人 consignee",
+      "level": 3,
+      "content": "由托运人或发货人指定，依据有关凭证与承运人交接并收取货物的当事人或其代理人。\n"
+    },
+    {
+      "heading": "托运人 shipper",
+      "level": 3,
+      "content": "本人或者委托他人以本人名义与承运人订立货物运输合同，并向承运人支付相应费用的一方当事人。\n4\n"
+    },
+    {
+      "heading": "4.5 承运人 carrier",
+      "level": 3,
+      "content": "本人或者委托他人以本人名义与托运人订立货物运输合同并承担运输责任的当事人。\n"
+    },
+    {
+      "heading": "4.6 无车承运人 non-truck operating carrier; NTOC",
+      "level": 3,
+      "content": "不拥有货运车辆，以承运人身份与托运人签订运输合同、承担承运人责任和义务，并委托实际承运人完成运输服务的道路货物运输经营者。\n"
+    },
+    {
+      "heading": "4.7 无船承运人 non-vessel operating carrier; NVOC",
+      "level": 3,
+      "content": "不拥有、不经营船舶，但以承运人的身份接受托运人委托，签发自己的提单或其他运输单证，向托运人收取运费并承担承运人责任，通过与有船承运人签订运输合同，完成海上货物运输经营活动的经营者。\n"
+    },
+    {
+      "heading": "4.8 门到门运输 door to door transport",
+      "level": 3,
+      "content": "承运人在托运人指定的地点收取货物，负责将货物运抵收货人指定地点的一种运输服务方式。\n"
+    },
+    {
+      "heading": "4.9 直达运输 through transport",
+      "level": 3,
+      "content": "货物由发运地到接收地，采用同一种运输方式、中途不需要中转的运输组织方式\n"
+    },
+    {
+      "heading": "4.10 中转运输 transfer transport",
+      "level": 3,
+      "content": "货物由发运地到接收地，中途经过至少一次落地、换装、铁路解编或公路甩挂的运输组织方式。\n"
+    },
+    {
+      "heading": "4.11 甩挂运输 tractor-and-trailer swap transport",
+      "level": 3,
+      "content": "用牵引车拖带挂车至物流节点，将挂车甩下后，牵引另一挂车继续作业的运输组织方式。\n"
+    },
+    {
+      "heading": "4.12 驮背运输 piggyback transport",
+      "level": 3,
+      "content": "将装有货物的道路运输车辆固定在铁路车辆上，并由铁路实现的运输活动。\n"
+    },
+    {
+      "heading": "4.13 整车运输 full-truck-load transport",
+      "level": 3,
+      "content": "一批属于同一发（收）货人的货物且其重量、体积、形状或性质需要以一辆（或多辆）货车单独装运，并据此办理承托手续、组织运送和计费的运输活动。\n"
+    },
+    {
+      "heading": "4.14 零担运输 less-than-truck-load transport",
+      "level": 3,
+      "content": "一批货物的重量、体积、形状和性质不需要单独使用一辆货车装运，并据此办理承托手续、组织运送和计费的运输活动。\n"
+    },
+    {
+      "heading": "4.15 带板运输 palletized transport",
+      "level": 3,
+      "content": "将货物按照一定规则，合理码放到标准托盘上并整合为标准化物流单元，进而开展装卸、搬运、运输、配送等作业的一种运输活动。\n"
+    },
+    {
+      "heading": "4.16 滚装运输 rolling transport",
+      "level": 3,
+      "content": "货物通过自身车轮或其他滚动行驶系统驶上、驶下/离滚装船舶而实现的运输活动。\n"
+    },
+    {
+      "heading": "4.17 多式联运 multimodal transportation; intermodal transportation",
+      "level": 3,
+      "content": "货物由一种运载单元装载，通过两种或两种以上运输方式连续运输，并进行相关运输物流辅助作业的运输活动。\n"
+    },
+    {
+      "heading": "4.18 班列 scheduledrailway express",
+      "level": 3,
+      "content": "按照固定车次、线路、班期、全程运输时刻开行的铁路快运货物列车。\n"
+    },
+    {
+      "heading": "4.19 快递服务 express service",
+      "level": 3,
+      "content": "在承诺的时限内快速完成的寄递服务。\n"
+    },
+    {
+      "heading": "4.20 集疏运 collection and distribution",
+      "level": 3,
+      "content": "以大型物流节点为中心，运用各种运输方式将货物集中或疏散的运输活动。\n"
+    },
+    {
+      "heading": "4.21 集拼 consolidation",
+      "level": 3,
+      "content": "将不同货主且流向相同的小批量货物集中起来、分类整理，并拼装至同一集装单元器具或同一载运工具的业务活动。\n"
+    },
+    {
+      "heading": "4.22 仓储 warehousing",
+      "level": 3,
+      "content": "利用仓库及相关设施设备进行物品的入库、储存、出库的活动。\n"
+    },
+    {
+      "heading": "4.23 储存 storing",
+      "level": 3,
+      "content": "贮藏、保护、管理物品。\n"
+    },
+    {
+      "heading": "4.24 保管 stock keeping",
+      "level": 3,
+      "content": "对物品进行储存，并对其进行保护和管理的活动。\n"
+    },
+    {
+      "heading": "4.25 物资储备 goods reserving",
+      "level": 3,
+      "content": "为应对突发公共事件和国家宏观调控的需要，对备用物资进行较长时间的储存和保管的活动。\n"
+    },
+    {
+      "heading": "4.26 堆码 stacking",
+      "level": 3,
+      "content": "将物品整齐、规则地摆放成货垛的作业。\n"
+    },
+    {
+      "heading": "4.27 码盘作业 palletizing",
+      "level": 3,
+      "content": "以托盘为承载物，将物品向托盘上堆放的作业。\n"
+    },
+    {
+      "heading": "4.28 货垛 goods stack",
+      "level": 3,
+      "content": "按一定要求将货物堆码所形成的货物单元。\n"
+    },
+    {
+      "heading": "4.29 盘点 stock checking",
+      "level": 3,
+      "content": "对储存物品进行清点和账物核对的活动。\n"
+    },
+    {
+      "heading": "4.30 分拣 sorting and picking",
+      "level": 3,
+      "content": "将物品按一定目的进行分类、拣选的相关作业。\n"
+    },
+    {
+      "heading": "4.31 换装 transshipment",
+      "level": 3,
+      "content": "将货物由一运输工具上卸下，再装到另一运输工具上的物流衔接作业。\n"
+    },
+    {
+      "heading": "直拨 direct distribution",
+      "level": 3,
+      "content": "物品在物流节点内不经过出入库等储存活动，直接从一个运输工具换载至其他运输工具的作业方式。\n"
+    },
+    {
+      "heading": "4.33 库存 inventory",
+      "level": 3,
+      "content": "储存作为今后按预定的目的使用而处于备用或非生产状态的物品。\n注：广义的库存还包括处于制造加工状态和运输状态的物品。\n"
+    },
+    {
+      "heading": "4.34 库存周期 inventory cycle time",
+      "level": 3,
+      "content": "库存物品从入库到出库的平均时间。\n"
+    },
+    {
+      "heading": "4.35 存储单元 stock keeping unit;SKU",
+      "level": 3,
+      "content": "依据物品特点确定，便于对物品进行存放、保护、管理的相对独立的规格化单位。\n"
+    },
+    {
+      "heading": "4.36 仓单 warehouse receipt",
+      "level": 3,
+      "content": "仓储保管人在与存货人签订仓储保管合同的基础上，按照行业惯例，以表面审查、外观查验为一般原则，对存货人所交付的仓储物品进行验收之后出具的权利凭证。\n"
+    },
+    {
+      "heading": "4.37 存货质押融资监管 inventory financing supervision",
+      "level": 3,
+      "content": "需要融资的企业（即借方），将其拥有的存货作为质物，向资金提供企业（即贷方）出质，同时将质物委托给具有合法保管存货资格的物流企业（中介方）保管和占有，以获得贷方资金的业务活动。\n"
+    },
+    {
+      "heading": "4.38 共同配送 joint distribution",
+      "level": 3,
+      "content": "由多个企业或其他组织整合多个客户的货物需求后联合组织实施的配送方式。\n"
+    },
+    {
+      "heading": "4.39 多温共配 multi-temperature joint distribution",
+      "level": 3,
+      "content": "按照客户需求，在同一个车辆上对两种及以上不同温控需求的货物进行的共同配送方式。\n"
+    },
+    {
+      "heading": "4.40 即时配送 on-demand delivery",
+      "level": 3,
+      "content": "立即响应用户提出的即刻服务要求并且短时间内送达的配送方式。\n"
+    },
+    {
+      "heading": "4.41 准时制配送 just-in-time distribution",
+      "level": 3,
+      "content": "将所需的货物在客户所指定的时间以指定的数量送达指定地点的配送方式。\n"
+    },
+    {
+      "heading": "4.42 补货 replenishment",
+      "level": 3,
+      "content": "为保证物品存货数量而进行的补充相应库存的活动。\n"
+    },
+    {
+      "heading": "4.43 理货 tally",
+      "level": 3,
+      "content": "在货物储存、装卸过程中，对货物进行整理等相关作业的活动。\n"
+    },
+    {
+      "heading": "4.44 货 goods collection",
+      "level": 3,
+      "content": "将分散的或小批量的货物集中起来，以便进行运输、配送的活动。\n"
+    },
+    {
+      "heading": "4.45 组配货 grouping allocation",
+      "level": 3,
+      "content": "根据客户、流向及品类，对货物进行组合、配货，以便合理安排装载的活动。\n"
+    },
+    {
+      "heading": "4.46 装卸 loading and unloading",
+      "level": 3,
+      "content": "在运输工具间或运输工具与存放场地（仓库）间，以人力或机械方式对物品进行载上载入或卸下卸出的作业过程。\n"
+    },
+    {
+      "heading": "4.47 搬运 handling",
+      "level": 3,
+      "content": "在同一场所内，以人力或机械方式对物品进行空间移动的作业过程。\n"
+    },
+    {
+      "heading": "4.48 加固 securing",
+      "level": 3,
+      "content": "为保证稳定性、完好性和安全性而将货物合理固定的作业。\n"
+    },
+    {
+      "heading": "4.49 配载 load matching planning",
+      "level": 3,
+      "content": "根据载运工具和待运物品的实际情况，确定应装运货物的品种、数量、体积及其在载运工具上的位置的活动。\n"
+    },
+    {
+      "heading": "4.50 包装 package; packaging",
+      "level": 3,
+      "content": "为在流通过程中保护产品、方便储运、促进销售，按一定技术方法而采用的容器、材料及辅助物等的总体名称。\n注：也指为了达到上述目的而采用容器、材料和辅助物的过程中施加一定技术方法等的操作活动。\n[来源：GB/T 4122.1—2008, 2.1, 有修改]\n"
+    },
+    {
+      "heading": "4.51 运输包装 transport packaging",
+      "level": 3,
+      "content": "以满足运输、仓储要求为主要目的的包装。\n"
+    },
+    {
+      "heading": "4.52 绿色包装 green packaging",
+      "level": 3,
+      "content": "满足包装功能要求的对人体健康和生态环境危害小、资源能源消耗少的包装。\n"
+    },
+    {
+      "heading": "4.53 物流包装回收 logistics package recycling",
+      "level": 3,
+      "content": "将物流活动过程中已使用的包装进行收集，以便处理并再次利用的过程。\n"
+    },
+    {
+      "heading": "4.54 流通加工 distribution processing",
+      "level": 3,
+      "content": "根据顾客的需要，在流通过程中对产品实施的简单加工作业活动的总称。\n注：简单加工业活动包括包装、分割、计量、分拣、刷标志、拴标签、组装、组配等。\n"
+    },
+    {
+      "heading": "4.55 物流增值服务 logistics value-added service",
+      "level": 3,
+      "content": "在完成物流基本功能的基础上，根据客户需求提供的各种延伸业务活动。\n"
+    },
+    {
+      "heading": "4.56 定制物流 customized logistics",
+      "level": 3,
+      "content": "根据用户的特定要求而为其专门设计的物流服务模式。\n"
+    },
+    {
+      "heading": "4.57 物流服务质量 logistics service quality",
+      "level": 3,
+      "content": "用精度、时间、费用、顾客满意度等来表示的物流服务的品质。\n"
+    },
+    {
+      "heading": "4.58 供应链金融 supply chain finance",
+      "level": 3,
+      "content": "以核心企业为依托，以企业信用或交易标的为担保，锁定资金用途及还款来源，对供应链各环节参与企业提供融资、结算、资金管理等服务的业务和业态。\n"
+    },
+    {
+      "heading": "4.59 运价 transport price",
+      "level": 3,
+      "content": "承、托运双方按运输服务的价值确定的交易价格。\n"
+    },
+    {
+      "heading": "4.60 订货提前期 order lead-time",
+      "level": 3,
+      "content": "客户从发出订货单到收到货物的时间间隔。\n"
+    },
+    {
+      "heading": "4.61 合同物流 contract logistics",
+      "level": 3,
+      "content": "物流经营者通过整合、管控资源，按照合同约定的时间、地点、价格等内容为物流需求方提供的物流服务模式。\n"
+    },
+    {
+      "heading": "5.1 物流设施 logistics facilities",
+      "level": 3,
+      "content": "用于物流活动所需的、不可移动的建筑物、构筑物及场所。\n"
+    },
+    {
+      "heading": "5.2 物流设备 logistics equipment",
+      "level": 3,
+      "content": "物流活动所需的装备及器具的总称。\n"
+    },
+    {
+      "heading": "5.3 集装运输 unitized transport",
+      "level": 3,
+      "content": "使用集装器具或利用捆扎方法，把裸状物品、散状物品、体积较小的成件物品，组合成为一定规格的集装单元进行运输的一种组织形式。\n"
+    },
+    {
+      "heading": "5.4 分拣输送系统 sorting and picking system",
+      "level": 3,
+      "content": "采用分拣设备、输送机等机械设备实现物品分类、输送和存取的系统。\n"
+    },
+    {
+      "heading": "5.5 单元装卸 unit loading and unloading",
+      "level": 3,
+      "content": "用托盘、容器或包装物将小件或散状物品集成一定质量或体积的组合件，利用机械对组合件进行装卸的作业方式。\n"
+    },
+    {
+      "heading": "5.6 托盘循环共用系统 pallet pooling system",
+      "level": 3,
+      "content": "在多个用户间实现托盘共享、交换、重复使用的综合性物流服务系统。\n"
+    },
+    {
+      "heading": "5.7 周转容器循环使用 returnable container circulating",
+      "level": 3,
+      "content": "周转容器在众多用户之间共享互换，完成预期的有限次数的重复使用。\n"
+    },
+    {
+      "heading": "5.8 集装化 unitization",
+      "level": 3,
+      "content": "用集装器具或采用捆扎方法，把物品组成标准规格的货物单元，以便进行装卸、搬运、储存、运输等物流活动的作业方式。\n"
+    },
+    {
+      "heading": "5.9 散改集 containerized transportation of bulk",
+      "level": 3,
+      "content": "将未包装的粉末、颗粒或块状的物质转为使用集装箱运输、暂存的物流作业方式。\n"
+    },
+    {
+      "heading": "5.10 循环取货 milk-run",
+      "level": 3,
+      "content": "同一货运车辆按照预先设定的路线和时间依次到两个及以上取货点处取货，然后直接送达到指定地点的一种物流运作模式。\n"
+    },
+    {
+      "heading": "5.11 冷链 cold-chain",
+      "level": 3,
+      "content": "根据物品特性，从生产到消费的过程中使物品始终处于保持其品质所需温度环境的物流技术与组织系统。\n"
+    },
+    {
+      "heading": "5.12 仓库 warehouse",
+      "level": 3,
+      "content": "用于储存、保管物品的建筑物和场所的总称。\n"
+    },
+    {
+      "heading": "5.13 库房 storehouse",
+      "level": 3,
+      "content": "在仓库中，用于储存、保管物品的封闭式建筑物。\n"
+    },
+    {
+      "heading": "5.14 自营仓库 private warehouse",
+      "level": 3,
+      "content": "由企业或各类组织自主经营和自行管理，为自身的物品提供储存和保管的仓库。\n"
+    },
+    {
+      "heading": "5.15 公共仓库 public warehouse",
+      "level": 3,
+      "content": "面向社会提供物品储存服务，并收取费用的仓库。\n"
+    },
+    {
+      "heading": "5.16 立体仓库 stereoscopic warehouse",
+      "level": 3,
+      "content": "采用高层货架，可借助机械化或自动化等手段立体储存物品的仓库。\n"
+    },
+    {
+      "heading": "5.17 交割仓库 delivery warehouse",
+      "level": 3,
+      "content": "经期货交易机构核准，并按照其规定的规则和流程，为交易双方提供期货商品储存和交付服务的\n"
+    },
+    {
+      "heading": "5.18 货场 freight yard",
+      "level": 3,
+      "content": "用于储存和保管货物、办理货物运输，并具有货物进出通道和装卸条件的场所。\n"
+    },
+    {
+      "heading": "5.19 航空港 airport",
+      "level": 3,
+      "content": "位于航空运输线上，依托机场的建筑物和设施，开展货物装卸暂存、中转分拨等物流业务的基础设施（区域）。\n"
+    },
+    {
+      "heading": "5.20 码头 wharf",
+      "level": 3,
+      "content": "供船舶停靠，装卸货物等相关作业的水工建筑物及场所。\n"
+    },
+    {
+      "heading": "5.21 铁路专用线 private railway siding",
+      "level": 3,
+      "content": "与铁路运营网相衔接，为特定企业、单位或物流节点服务的铁路装卸线及其联结线。\n"
+    },
+    {
+      "heading": "5.22 交通枢纽 transportation hub",
+      "level": 3,
+      "content": "在一种或多种运输方式的干线交叉与衔接处，共同为办理物品中转、发送、到达所建设的多种运输设施的综合体。\n"
+    },
+    {
+      "heading": "5.23 内陆港 inland port",
+      "level": 3,
+      "content": "在内陆地区建设的，具有货物存储、中转与分拨集散等与港口相似的物流功能，可以提供通关、报检等港口服务的物流节点。\n"
+    },
+    {
+      "heading": "5.24 集装箱场站 yard-station",
+      "level": 3,
+      "content": "进行集装箱装卸、掏装箱、堆存保管、维护清洗等作业，办理集装箱运输、中转换装、货物交接及相关业务的场所。\n"
+    },
+    {
+      "heading": "5.25 港口 water port",
+      "level": 3,
+      "content": "位于江、河、湖、海或水库等沿岸，由一定范围的水域和陆域组成的且具有相应的设施设备和条件开展船舶进出、停靠，货物运输、物流等相关业务的区域。\n"
+    },
+    {
+      "heading": "5.26 集装箱船 container ship",
+      "level": 3,
+      "content": "用于载运集装箱的船舶。\n"
+    },
+    {
+      "heading": "5.27 厢式货车 cargo van",
+      "level": 3,
+      "content": "载货部位的结构为封闭厢体且与驾驶室各自独立的道路货运车辆。\n"
+    },
+    {
+      "heading": "5.28 牵引车 tractor",
+      "level": 3,
+      "content": "具有牵引装置，用于牵引挂车的商用车辆。\n"
+    },
+    {
+      "heading": "5.29 挂车 trailer",
+      "level": 3,
+      "content": "设计和制造上需由汽车或拖拉机牵引，才能在道路上正常使用的无动力道路车辆，包括牵引杆挂车、中置轴挂车和半挂车，用于：\nGB/T 18354—2021\n——载运货物；\n——特殊用途。\n[来源：GB 7258—2017,3.3]\n"
+    },
+    {
+      "heading": "5.30 货架 rack",
+      "level": 3,
+      "content": "由立柱、隔板或横梁等结构件组成的储物设施。\n"
+    },
+    {
+      "heading": "5.31 分拣设备 sorting and picking equipment",
+      "level": 3,
+      "content": "用于完成物品分类、拣选等相关作业的设备。\n"
+    },
+    {
+      "heading": "5.32 叉车 fork lift truck",
+      "level": 3,
+      "content": "具有各种叉具及属具，能够对物品进行升降和移动以及装卸作业的搬运车辆。\n"
+    },
+    {
+      "heading": "5.33 物流机器人 robot for logistics",
+      "level": 3,
+      "content": "具有一定程序的自主能力，能代替人执行物流作业预期任务，可重复编程的自动控制操作机。\n"
+    },
+    {
+      "heading": "5.34 自动导引车 automatic guided vehicle; AGV",
+      "level": 3,
+      "content": "在车体上装有电磁学或光学等导引装置、计算机装置、安全保护装置，能够沿设定的路径自动行驶，具有物品移载功能的搬运车辆。\n"
+    },
+    {
+      "heading": "5.35 起重机械 hoisting machinery",
+      "level": 3,
+      "content": "一种以间歇作业方式对物品进行起升、下降和水平移动的搬运机械。\n"
+    },
+    {
+      "heading": "5.36 升降台 lift table; LT",
+      "level": 3,
+      "content": "能垂直升降和水平移动物品或集换单元器具的专用设备。\n"
+    },
+    {
+      "heading": "5.37 输送机 conveyor",
+      "level": 3,
+      "content": "按照规定路线连续地或间歇地运送散状物品或成件物品的搬运机械。\n"
+    },
+    {
+      "heading": "5.38 调节板 dock leveler",
+      "level": 3,
+      "content": "用于调整站台与货车底板间的高度差，以便于装卸作业的一种设备。\n"
+    },
+    {
+      "heading": "5.39 装器具 unitized implement",
+      "level": 3,
+      "content": "用于承载由物品组成的标准规格、便于储运的单元器具。\n"
+    },
+    {
+      "heading": "5.40 集装单元 unitized unit",
+      "level": 3,
+      "content": "用专门器具盛放或捆扎处理的，便于装卸、搬运、储存、运输的标准规格的单元货件物品。\n"
+    },
+    {
+      "heading": "5.41 集装箱 container",
+      "level": 3,
+      "content": "具有足够的强度，可长期反复使用的适于多种运输工具而且容积在 1 m³ 以上（含 1 m³）的集装单元器具。\n"
+    },
+    {
+      "heading": "5.42 集装箱标准箱 twenty-foot equivalent unit for container; TEU",
+      "level": 3,
+      "content": "以一个 20 英尺集装箱为标准的集装箱。\n注：也为集装箱的统计换算单位。\n"
+    },
+    {
+      "heading": "5.43 集装袋 flexible freightbag",
+      "level": 3,
+      "content": "用柔性材料制成的袋式集装器具。\n"
+    },
+    {
+      "heading": "5.44 周转箱 returnable container",
+      "level": 3,
+      "content": "用于存放物品，可重复、循环使用的小型集装器具。\n"
+    },
+    {
+      "heading": "5.45 自备箱 shipper’s own container",
+      "level": 3,
+      "content": "由托运人提供并负责运营管理、印有相应产权人标记的集装箱。\n"
+    },
+    {
+      "heading": "5.46 托盘 pallet",
+      "level": 3,
+      "content": "在运输、搬运和存储过程中，将物品规整为货物单元时，作为承载面并包括承载面上辅助结构件的装置。\n"
+    },
+    {
+      "heading": "5.47 称量装置 load weighing device",
+      "level": 3,
+      "content": "针对起重、运输、装卸、包装、配送以及生产过程中的物品实施重量检测的设备。\n"
+    },
+    {
+      "heading": "6.1 条码 bar code",
+      "level": 3,
+      "content": "由一组规则排列的条、空组成的符号，可供机器识读，用以表示一定的信息，包括一维条码和二维条码。\n[来源：GB/T 12905—2019,2.1]\n"
+    },
+    {
+      "heading": "6.2 一维条码 linear bar code; one-dimensional bar code",
+      "level": 3,
+      "content": "仅在一个维度方向上表示信息的条码符号。\n[来源：GB/T 12905—2019,2.2]\n"
+    },
+    {
+      "heading": "二维码 two-dimensional code",
+      "level": 4,
+      "content": "在二个维度方向上都表示信息的条码符号。\n[来源：GB/T 12905—2019,2.3,有修改]\n"
+    },
+    {
+      "heading": "6.4 物品编码 article numbering; article number",
+      "level": 3,
+      "content": "按一定规则赋予物品易于机器和人识别、处理的代码，是给物品赋予编码的过程。\n注 1：通常，物品编码包括物品标识编码、物品分类编码和物品属性编码三种类型。\n注 2：作名词时，指给物品赋予的代码本身。\n[来源：GB/T 37056—2018,2.7]\n"
+    },
+    {
+      "heading": "6.5 物品标识编码 article identification number",
+      "level": 3,
+      "content": "赋予物品的身份标识的编码，用以唯一标识某类、某种或某个物品。\n[来源：GB/T 37056—2018,2.9]\n"
+    },
+    {
+      "heading": "6.6 物流标签 logistics label",
+      "level": 3,
+      "content": "记录包装单元相关信息的载体。\n"
+    },
+    {
+      "heading": "6.7 射频标签 radio frequency tag; RF tag",
+      "level": 3,
+      "content": "电子标签 electronic label\n用于物体或物品标识、具有信息存储功能、能接收读写器的电磁场调制信号，并返回响应信号的数据载体。\n[来源：GB/T 29261.3—2012,05.04.01,有修改]\n"
+    },
+    {
+      "heading": "6.8 电子运单 electronic waybill",
+      "level": 3,
+      "content": "物流过程中，将物品原始收发等信息按一定格式存储在计算机信息系统中的单据。\n"
+    },
+    {
+      "heading": "6.9 物流信息技术 logistics information technology",
+      "level": 3,
+      "content": "以计算机和现代通信技术为主要手段实现对物流各环节中信息的获取、处理、传递和利用等功能的技术总称。\n"
+    },
+    {
+      "heading": "6.10 自动识别技术 automatic identification technology",
+      "level": 3,
+      "content": "对字符、影像、条码、声音等记录数据的载体进行机器自动辨识并转化为数据的技术。\n"
+    },
+    {
+      "heading": "6.11 射频识别 radio frequency identification; RFID",
+      "level": 3,
+      "content": "在频谱的射频部分，利用电磁耦合或感应耦合，通过各种调式和编码方案，与射频标签交互通信唯一读取射频标签身份的技术。\n[来源：GB/T 29261.3—2012,05.01.01]\n"
+    },
+    {
+      "heading": "6.12 电子数据交换 electronic data interchange; EDI",
+      "level": 3,
+      "content": "采用标准化的格式，利用计算机网络进行业务数据的传输和处理。\n"
+    },
+    {
+      "heading": "6.13 物流系统仿真 logistics system simulation",
+      "level": 3,
+      "content": "借助计算机仿真技术，对物流系统建模并进行实验，得到各种动态活动过程的模拟记录，进而研究物流系统性能的方法。\n"
+    },
+    {
+      "heading": "6.14 电子通关 electronic customs clearance",
+      "level": 3,
+      "content": "对符合特定条件的报关单证，海关采用处理电子单证数据的方法，利用计算机完成单证审核、征收税费、放行等海关作业的通关方式。\n"
+    },
+    {
+      "heading": "6.15 物流管理信息系统 logistics management information system",
+      "level": 3,
+      "content": "通过对物流相关信息的收集、存储、加工、处理以便实现物流的有效控制和管理，并提供决策支持的人机系统。\n"
+    },
+    {
+      "heading": "6.16 射频识别系统 radio frequency identification system",
+      "level": 3,
+      "content": "由射频标签、识读器、计算机网络和应用程序及数据库组成的自动识别和数据采集系统。\n"
+    },
+    {
+      "heading": "6.17 地理信息系统 geographical information system; GIS",
+      "level": 3,
+      "content": "在计算机技术支持下，对整个或部分地球表层（包括大气层）空间中的有关地理分布数据进行采集、储存、管理、运算、分析、显示和描述的系统。\n"
+    },
+    {
+      "heading": "6.18 全球定位系统 global positioning system",
+      "level": 3,
+      "content": "以人造卫星为基础，24 h 提供高精度的全球范围的定位和导航信息的系统。\n"
+    },
+    {
+      "heading": "6.19 运输管理系统 transportation management system; TMS",
+      "level": 3,
+      "content": "在运输作业过程中，进行配载作业、调度分配、线路规划、行车管理等多项任务管理的系统。\n"
+    },
+    {
+      "heading": "6.20 智能运输系统 intelligent transport system; ITS",
+      "level": 3,
+      "content": "在较完善的交通基础设施上，将先进的科学技术（信息技术、计算机技术、数据通信技术、传感器技术、电子控制技术、自动控制理论、运筹学、人工智能等）有效地综合运用于交通运输、服务控制和车辆制造，加强车辆、道路、使用者三者之间的联系，从而形成的一种保障安全、提高效率、改善环境、节约能源的综合运输系统。\n[来源：GB/T 37373—2019，3.1]\n"
+    },
+    {
+      "heading": "6.21 货物跟踪系统 goods tracking system",
+      "level": 3,
+      "content": "利用自动识别、全球定位系统、地理信息系统、通信等技术，获取货物动态信息的应用系统。\n"
+    },
+    {
+      "heading": "6.22 仓库管理系统 warehouse management system; WMS",
+      "level": 3,
+      "content": "对物品入库、出库、盘点及其他相关仓库作业，仓储设施与设备，库区库位等实施全面管理的计算机信息系统。\n"
+    },
+    {
+      "heading": "6.23 销售时点系统 point of sale; POS",
+      "level": 3,
+      "content": "利用自动识别设备，按照商品最小销售单位读取实时销售信息，以及采购、配送等环节发生的信息，并对这些信息进行加工、处理和共享的系统。\n"
+    },
+    {
+      "heading": "6.24 电子订货系统 electronic ordering system; EOS",
+      "level": 3,
+      "content": "不同组织间利用通信网络和终端设备进行订货作业与订货信息交换的系统。\n"
+    },
+    {
+      "heading": "6.25 自动存取系统 automatic storage and retrieval system; AS/RS",
+      "level": 3,
+      "content": "借助机械设备与计算机管理控制系统实现物料存入或取出的系统。\n"
+    },
+    {
+      "heading": "6.26 物流公共信息平台 public logistics information platform",
+      "level": 2,
+      "content": "应用信息技术，统筹和整合物流行业相关信息资源，并向社会主体提供物流信息、技术、设备等资源共享服务的系统。\n"
+    },
+    {
+      "heading": "7.1 ABC 分类法 ABC classification",
+      "level": 2,
+      "content": "将库存物品按照设定的分类标准和要求分为特别重要的库存（A 类）、一般重要的库存（B 类）和不重要的库存（C 类）三个等级，然后针对不同等级分别进行控制的管理方法。\n"
+    },
+    {
+      "heading": "7.2 安全库存 safety stock",
+      "level": 2,
+      "content": "用于应对不确定性因素而准备的缓冲库存。\n"
+    },
+    {
+      "heading": "7.3 定量订货制 fixed-quantity system; FQS",
+      "level": 2,
+      "content": "当库存量下降到预定的库存数量（订货点）时，立即按一定的订货批量进行订货的一种方式。\n"
+    },
+    {
+      "heading": "7.4 定期订货制 fixed-interval system; FIS",
+      "level": 2,
+      "content": "按预先确定的订货间隔期进行订货的一种方式。\n"
+    },
+    {
+      "heading": "7.5 经济订货批量 economic ordering quantity; EOQ",
+      "level": 2,
+      "content": "通过平衡采购进货成本和保管仓储成本核算，以实现总库存成本最低的最佳订货量。\n"
+    },
+    {
+      "heading": "7.6 连续补货计划 continuous replenishment program; CRP",
+      "level": 2,
+      "content": "利用及时准确的销售信息、生产时点信息确定已销售的商品或已消耗的库存数量，根据下游客户的库存信息和预先规定的库存补充程序确定发货补充数量和配送时间的计划方法。\n"
+    },
+    {
+      "heading": "7.7 物料需求计划 material requirements planning; MRP",
+      "level": 2,
+      "content": "利用一系列产品物料清单数据、库存数据和主生产计划计算物料需求的一套技术方法。\n"
+    },
+    {
+      "heading": "7.8 制造资源计划 manufacturing resource planning; MRP Ⅱ",
+      "level": 2,
+      "content": "在物料需求计划（MRP）的基础上，增加营销、财务和采购功能，对企业制造资源和生产经营各环节实行合理有效的计划、组织、协调与控制，达到既能连续均衡生产，又能最大限度地降低各种物品的库存量，进而提高企业经济效益的管理方法。\n"
+    },
+    {
+      "heading": "7.9 配送需求计划 distribution requirements planning; DRP",
+      "level": 2,
+      "content": "依据市场需求、库存、生产计划信息来配置物流配送资源的一套技术方法。\n"
+    },
+    {
+      "heading": "7.10 送资源计划 distribution resource planning; DRP Ⅱ",
+      "level": 2,
+      "content": "在配送需求计划（DRP）的基础上提高配送各环节的物流能力，达到系统优化运行目的的企业内物\n品配送计划管理方法。\n"
+    },
+    {
+      "heading": "7.11 企业资源计划 enterprise resource planning; ERP",
+      "level": 2,
+      "content": "在制造资源计划(MRPⅡ)的基础上,通过前馈的物流和反馈的信息流、资金流,把客户需求和企业内部的生产经营活动以及供应商的资源整合在一起,体现按用户需求进行经营管理的一种管理方法。\n"
+    },
+    {
+      "heading": "7.12 物流资源计划 logistics resource planning; LRP",
+      "level": 2,
+      "content": "以物流为手段,打破生产与流通界限,集成制造资源计划、能力资源计划、配送资源计划以及功能计划而形成的资源优化配置方法。\n"
+    },
+    {
+      "heading": "7.13 物流外包 logistics outsourcing",
+      "level": 2,
+      "content": "企业将其部分或全部物流的业务交由合作企业完成的物流运作模式。\n"
+    },
+    {
+      "heading": "7.14 延迟策略 postponement strategy",
+      "level": 2,
+      "content": "为了降低供应链的整体风险,有效地满足客户个性化的需求,将最后的生产环节或物流环节推迟到客户提供订单以后进行的一种经营策略。\n"
+    },
+    {
+      "heading": "7.15 物流流程重组 logistics process reengineering",
+      "level": 2,
+      "content": "从顾客需求出发,通过物流活动各要素的有机组合,对物流管理和作业流程进行优化设计。\n"
+    },
+    {
+      "heading": "7.16 物流资源整合 logistics resources integration",
+      "level": 2,
+      "content": "将分散的物流资源进行有机集成,实现系统协调与优化的动态过程。\n"
+    },
+    {
+      "heading": "7.17 享库存 shared inventory",
+      "level": 2,
+      "content": "多方共用库存资源并统一调度的库存管理模式。\n"
+    },
+    {
+      "heading": "7.18 供应链集成 supply chain integration",
+      "level": 2,
+      "content": "将供应链中的商流、物流、信息流、资金流等要素通过信息共享、计划协同和流程集成,实现系统协调与优化的动态过程。\n"
+    },
+    {
+      "heading": "7.19 前置仓 preposition warehouse",
+      "level": 2,
+      "content": "在最终消费者比较集中的最近区域设置的配送仓库。\n"
+    },
+    {
+      "heading": "7.20 仓配一体 integration of warehousing and distribution",
+      "level": 2,
+      "content": "为客户提供一站式仓储与配送服务的运作模式。\n"
+    },
+    {
+      "heading": "7.21 有效客户反应 efficient customer response; ECR",
+      "level": 2,
+      "content": "以满足顾客要求和最大限度降低物流过程费用为原则,能及时做出准确反应,使提供的物品供应或服务流程最佳化的一种供应链管理策略。\n"
+    },
+    {
+      "heading": "7.22 快速反应 quick response; QR",
+      "level": 2,
+      "content": "供应链成员企业之间建立战略合作伙伴关系,利用电子数据交换(EDI)等信息技术进行信息交换\n与信息共享，用高频率小批量配送方式补货，以实现缩短交货周期，减少库存，提高顾客服务水平和企业竞争力为目的的一种供应链管理策略。\n"
+    },
+    {
+      "heading": "7.23 仓储管理 warehousing management",
+      "level": 3,
+      "content": "对仓储及相关作业进行的计划、组织、协调与控制。\n"
+    },
+    {
+      "heading": "7.24 存货控制 inventory control",
+      "level": 3,
+      "content": "使库存物品的种类、数量、时间、地点等合理化所进行的管理活动。\n"
+    },
+    {
+      "heading": "7.25 供应商管理库存 vendor managed inventory; VMI",
+      "level": 3,
+      "content": "按照双方达成的协议，由供应链的上游企业根据下游企业的需求计划、销售信息和库存量，主动对下游企业的库存进行管理和控制的库存管理方式。\n"
+    },
+    {
+      "heading": "7.26 联合库存管理 joint managed inventory; JMI",
+      "level": 3,
+      "content": "供应链成员企业共同制定库存计划，并实施库存控制的供应链库存管理方式。\n"
+    },
+    {
+      "heading": "7.27 物流成本管理 logistics cost control",
+      "level": 3,
+      "content": "对物流活动发生的相关成本进行计划、组织、协调与控制。\n"
+    },
+    {
+      "heading": "7.28 物流战略管理 logistics strategy management",
+      "level": 3,
+      "content": "通过物流战略设计、战略实施、战略评价与控制等环节，调节物流资源、组织结构等最终实现物流系统宗旨和战略目标的一系列动态过程的总和。\n"
+    },
+    {
+      "heading": "7.29 物流质量管理 logistics quality management",
+      "level": 3,
+      "content": "对物流全过程的物品质量及服务质量进行的计划、组织、协调与控制。\n"
+    },
+    {
+      "heading": "7.30 物流总成本分析 total cost analysis",
+      "level": 3,
+      "content": "判别物流各环节中系统变量之间的关系，在特定的客户服务水平下使物流总成本最小化的物流管理方法。\n"
+    },
+    {
+      "heading": "7.31 物流作业成本法 logistics activity-based costing",
+      "level": 3,
+      "content": "以特定物流活动成本为核算对象，通过成本动因来确认和计算作业量，进而以作业量为基础分配间接费用的物流成本管理方法。\n"
+    },
+    {
+      "heading": "7.32 物流效益背反 logistics trade off",
+      "level": 3,
+      "content": "一种物流活动的高成本，会因另一种物流活动成本的降低或效益的提高而抵消的相互作用关系。\n"
+    },
+    {
+      "heading": "7.33 牛鞭效应 bullwhip effect",
+      "level": 3,
+      "content": "由供应链下游需求的小变动引发的供应链上游需求变动逐级放大的现象。\n[来源：GB/T 26337.2—2011,2.7,有修改]\n"
+    },
+    {
+      "heading": "8.1 跨境运输 cross-border transportation",
+      "level": 3,
+      "content": "一种跨越国境或边境的运输。\n"
+    },
+    {
+      "heading": "8.2 国际多式联运 international multimodal transportation; international intermodal transportation",
+      "level": 3,
+      "content": "按照多式联运合同，以至少两种不同的运输方式，由多式联运经营人将货物从一国境内的接管地点运至另一国境内指定交付地点的货物运输方式。\n"
+    },
+    {
+      "heading": "8.3 国际航空货物运输 international air cargo transport",
+      "level": 3,
+      "content": "货物的出发地、约定的经停地和目的地之一不在同一国境内的航空运输。\n"
+    },
+    {
+      "heading": "8.4 国际铁路联运 international through railway transport",
+      "level": 3,
+      "content": "使用一份统一的国际铁路联运票据，由跨国铁路承运人办理两国或两国以上铁路的全程运输，并承担运输责任的一种连贯运输方式。\n"
+    },
+    {
+      "heading": "8.5 中欧班列 China-Europe freight express",
+      "level": 3,
+      "content": "按照固定车次、线路、班期和全程运行时刻开行，运行于中国与欧洲以及“一带一路”沿线国家间的集装箱等铁路国际联运列车。\n"
+    },
+    {
+      "heading": "8.6 班轮运输 liner transport",
+      "level": 3,
+      "content": "在固定的航线上，以既定的港口顺序，按照事先公布的船期表航行的水上运输经营方式。\n"
+    },
+    {
+      "heading": "8.7 租船运输 shipping by chartering",
+      "level": 3,
+      "content": "船舶出租人把船舶租给承租人，根据租船合同的规定或承租人的安排来运输货物的运输方式。\n"
+    },
+    {
+      "heading": "8.8 大陆桥运输 land bridge transport",
+      "level": 3,
+      "content": "用横贯大陆的铁路或公路作为中间桥梁，将大陆两端的海洋运输连接起来的连贯运输方式。\n"
+    },
+    {
+      "heading": "8.9 转关运输 trans-customs transport",
+      "level": 3,
+      "content": "进出口货物在海关监管下，从一个海关运至另一个海关办理海关手续的行为。\n"
+    },
+    {
+      "heading": "8.10 国际中转集拼 international transit consolidation",
+      "level": 3,
+      "content": "境外货物经过国际航线运至本港，与国内转关至本港的出口货物，以及本地货源在海关特殊监管区域内根据不同目的港或不同客户，进行拆箱、分拣和包装，并重新装箱后再运送出境的物流服务。\n"
+    },
+    {
+      "heading": "8.11 报关 customs declaration",
+      "level": 3,
+      "content": "进出境运输工具的负责人、进出境货物的所有人、进出口货物的收发货人或其代理人向海关办理运输工具、货物、物品进出境手续的全过程。\n"
+    },
+    {
+      "heading": "8.12 保税货物 bonded goods",
+      "level": 3,
+      "content": "经海关批准未办理纳税手续进境，在境内储存、加工、装配后复运出境的货物。\n"
+    },
+    {
+      "heading": "8.13 海关监管货物 cargo under customs supervision",
+      "level": 3,
+      "content": "在海关监管区域内接受海关监管的货物。\n注：包括已进境但未办结海关手续的进口货物，已向海关申报但还未出境出口货物，已进境但还未出境的过境、转运和通运货物，以及其他尚未办结海关手续的进出境货物。\n"
+    },
+    {
+      "heading": "8.14 通运货物 through goods",
+      "level": 3,
+      "content": "由境外启运，经船舶或航空器载运入境后，仍由原载运工具继续运往境外的货物。\n"
+    },
+    {
+      "heading": "8.15 转运货物 transshipment goods",
+      "level": 3,
+      "content": "由境外启运，到我国境内设关地点换装运输工具后，不通过我国境内陆路运输，再继续运往境外的货物。\n"
+    },
+    {
+      "heading": "8.16 过境货物 transit goods",
+      "level": 3,
+      "content": "由境外启运、通过境内的陆路运输继续运往境外的货物。\n"
+    },
+    {
+      "heading": "8.17 出口退税 drawback",
+      "level": 3,
+      "content": "国家实行的由国内税务机关退还出口商品国内税的措施。\n"
+    },
+    {
+      "heading": "8.18 启运港退税 tax refund at port of shipment",
+      "level": 3,
+      "content": "将企业由原先的离境向海关报关后由税务机关办理出口退税，提前为从启运港出发即可申请出口退税的政策。\n"
+    },
+    {
+      "heading": "8.19 海关估价 customs valuation",
+      "level": 3,
+      "content": "一国海关为征收关税，根据统一的价格准则，确定某一进口（出口）货物价格的过程。\n"
+    },
+    {
+      "heading": "8.20 等级费率 class rate",
+      "level": 3,
+      "content": "将全部货物划分为若干个等级，按照不同的航线分别为每一个等级制定一个基本运价的费率。\n"
+    },
+    {
+      "heading": "8.21 船务代理 shipping agency",
+      "level": 3,
+      "content": "船舶代理\n接受船舶所有人（船公司）、船舶经营人、承租人的委托，在授权范围内代表委托人办理与在港船舶有关的业务、提供有关的服务或进行与在港船舶有关的其他法律行为的经济组织。\n"
+    },
+    {
+      "heading": "8.22 国际货运代理 international forwarder",
+      "level": 3,
+      "content": "接受进出口货物收货人或发货人的委托，以委托人或自己的名义，为委托人办理国际货物运输及相关业务的服务方式或经济组织。\n"
+    },
+    {
+      "heading": "8.23 航空货运代理 airfreight forwarder",
+      "level": 3,
+      "content": "以货主的委托代理人身份办理有关货物的航空运输手续的服务方式或经济组织。\n"
+    },
+    {
+      "heading": "8.24 提单 bill of lading; B/L",
+      "level": 3,
+      "content": "用以证明海上货物运输合同和货物已经由承运人接收或者装船，以及承运人保证据以交付货物的单证。\n"
+    },
+    {
+      "heading": "8.25 原产地证明 certificate of origin",
+      "level": 3,
+      "content": "出口国（地区）根据原产地规则和有关要求签发的，明确指出该证中所列货物原产于某一特定国家（地区）的书面文件。\n"
+    },
+    {
+      "heading": "8.26 进出口商品检验 import and export commodity inspection",
+      "level": 3,
+      "content": "商检机构和经国家商检部门许可的检验机构，对列入目录的进出口商品的质量、规格、卫生、安全、数量等进行检验、鉴定和监督管理的工作。\n"
+    },
+    {
+      "heading": "8.27 清关 customs clearance",
+      "level": 3,
+      "content": "结关\n报关单位在海关办理完毕进出口货物通关所必须的所有手续，完全履行法律规定的与进出口有关的义务，包括海关申报、查验、征税、放行等手续，货物结束海关监管的过程。\n"
+    },
+    {
+      "heading": "8.28 滞报金 fee for delayed declaration",
+      "level": 3,
+      "content": "进口货物的收货人或其他代理人超过海关规定的申报期限，未向海关申报，由海关依法征收的一定数额的款项。\n"
+    },
+    {
+      "heading": "8.29 装运港船上交货 free on board; FOB",
+      "level": 3,
+      "content": "卖方在合同规定的装运期内，在指定装运港将货物交至买方指定的船上，并负担在装船前货物灭失或损坏造成的所有风险的交货方式和价格模式。\n"
+    },
+    {
+      "heading": "8.30 成本加运费 cost and freight; CFR",
+      "level": 3,
+      "content": "卖方负责租船订舱，在合同规定的装运期内将货物交至运往指定目的港的船上，货物灭失或损坏的风险在货物交到船上时转移的交货方式和价格模式。\n"
+    },
+    {
+      "heading": "8.31 成本加保险费加运费 cost, insurance and freight; CIF",
+      "level": 3,
+      "content": "卖方负责租船订舱，办理货运保险，在合同规定的装运期内在装运港将货物交至运往指定目的港的船上，货物灭失或损坏的风险在货物交到船上时转移的交货方式和价格模式。\n"
+    },
+    {
+      "heading": "8.32 进料加工 processing with imported materials",
+      "level": 3,
+      "content": "境内企业进口物料加工后再销往国外的一种贸易方式。\n"
+    },
+    {
+      "heading": "8.33 来料加工 processing with supplied materials",
+      "level": 3,
+      "content": "由境外单位提供原料，委托境内加工单位在保税状态下进行加工装配，成品由境外单位销往国外的一种贸易方式。\n"
+    },
+    {
+      "heading": "8.34 口岸 port",
+      "level": 3,
+      "content": "经政府批准设置的供人员、货物和交通工具直接出入国（关、边）境的港口、机场、车站、跨境通道等。\n"
+    },
+    {
+      "heading": "8.35 保税物流 bonded logistics",
+      "level": 3,
+      "content": "在海关特殊监管区域或者场所，企业从事仓储、配送、运输、流通加工、装卸搬运、物流信息、方案设计等业务时享受海关实行的“境内关外”管理制度的一种物流服务模式。\n"
+    },
+    {
+      "heading": "8.36 保税维修 bonded reparation",
+      "level": 3,
+      "content": "企业以保税方式将存在部件损坏、功能失效、质量缺陷等问题的货物或运输工具从境外运入境内进行检测、维修后复运出境。\n"
+    },
+    {
+      "heading": "8.37 保税仓库 bonded warehouse",
+      "level": 3,
+      "content": "经海关批准设立的专门存放保税货物及其他未办结海关手续货物的仓库。\n"
+    },
+    {
+      "heading": "8.38 海外仓 overseas warehouse",
+      "level": 3,
+      "content": "国内企业在境外设立，面向所在国家或地区市场客户，就近提供进出口货物集并、仓储、分拣、包装和配送等服务的仓储设施。\n"
+    },
+    {
+      "heading": "8.39 保税工厂 bonded factory",
+      "level": 3,
+      "content": "经海关批准专门生产出口产品的保税加工装配企业。\n"
+    },
+    {
+      "heading": "8.40 A 型保税物流中心 bonded logistics center(A)",
+      "level": 3,
+      "content": "经海关批准，由中国境内企业法人经营、专门从事保税仓储物流业务的海关监管场所。\n"
+    },
+    {
+      "heading": "8.41 B 型保税物流中心 bonded logistics center(B)",
+      "level": 3,
+      "content": "经海关批准，由中国境内企业法人经营，多家企业进入并从事保税仓储物流业务的海关集中监管场所。\n"
+    },
+    {
+      "heading": "8.42 保税物流园区 bonded logistics park",
+      "level": 3,
+      "content": "经政府批准，在保税区规划面积或者毗邻保税区的特定港区内设立的、专门发展现代国际物流业的海关特殊监管区域。\n"
+    },
+    {
+      "heading": "8.43 保税港区 bonded port zone",
+      "level": 3,
+      "content": "经政府批准，设立在国家对外开放的口岸港区和与之相连的特定区域内，具有口岸、物流、加工等功能的海关特殊监管区域。\n注：具备仓储物流、对外贸易、国际采购、分销和配送、国际中转、检测和售后服务维修、商品展示、研发、加工、制造，港口作业等功能。享受保税区、出口加工区、保税物流园区相关的税收和外汇管理政策。\n"
+    },
+    {
+      "heading": "8.44 综合保税区 comprehensive free trade zone",
+      "level": 3,
+      "content": "经海关批准设立的具有保税港区功能的海关特殊监管区域。\n注：该区域由海关参照有关规定进行管理，执行保税港区的税收和外汇政策，可以发展国际中转、配送、采购、转口贸易和出口加工等业务。\n"
+    },
+    {
+      "heading": "8.45 自由贸易试验区 pilot free trade zone",
+      "level": 3,
+      "content": "在主权国家或地区的关境内，设立的以贸易投资便利化和货物自由进出为主要目的特定区域。\n"
+    }
+  ]
+}

@@ -1,0 +1,7965 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Knowledge Graph Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            color-scheme: light;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            height: 100vh;
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        .layout.sidebar-collapsed {
+            grid-template-columns: 0px 1fr;
+        }
+
+        .layout.sidebar-disabled {
+            grid-template-columns: 1fr;
+            width: 100%;
+        }
+
+        .layout.sidebar-disabled .main {
+            width: 100vw !important;
+        }
+
+        .layout.sidebar-disabled .tab-panel {
+            padding: 0 !important;
+            width: 100vw !important;
+        }
+
+        .layout.sidebar-disabled .network-panel {
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0;
+            border: none;
+            max-width: none !important;
+        }
+
+        .layout.sidebar-disabled #networkCanvas {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+        }
+
+        /* Force canvas to take full iframe space */
+        canvas#networkCanvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 24px 24px 16px;
+            overflow-y: auto;
+            transition: width 0.3s ease, opacity 0.3s ease;
+            display: block; /* Visible in standalone mode */
+        }
+
+        .sidebar.collapsed {
+            width: 0;
+            padding: 24px 0 16px;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .sidebar h1 {
+            margin: 0 0 8px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar p {
+            margin: 0 0 20px;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section h2 {
+            font-size: 1rem;
+            margin: 0 0 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #1e293b;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5f5;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .search-hint {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .list-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .list-item strong {
+            font-weight: 600;
+        }
+
+        .cluster-item,
+        .relation-item {
+            border-left: 4px solid transparent;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .cluster-item:hover,
+        .relation-item:hover {
+            background: #e2e8f0;
+        }
+
+        .cluster-item.active,
+        .relation-item.active {
+            transform: translateX(4px);
+            background: #e2e8f0;
+        }
+
+        .cluster-item .meta,
+        .relation-item .meta {
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px 0;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            border: none;
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .tab.active {
+            background: #1d4ed8;
+            color: #ffffff;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden when sidebar is disabled */
+        }
+
+        .sidebar-toggle:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .sidebar-toggle::before {
+            content: '☰';
+            margin-right: 6px;
+        }
+
+        .sidebar-toggle.collapsed::before {
+            content: '☰';
+        }
+
+        .tab-panel {
+            flex: 1;
+            display: none;
+            padding: 16px 20px;
+            overflow: hidden;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .network-panel {
+            height: calc(100vh - 74px);
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        #networkCanvas {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+        }
+
+        #networkCanvas {
+            cursor: grab;
+        }
+
+        #networkCanvas:active {
+            cursor: grabbing;
+        }
+
+        .selection-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+
+        .selection-card h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .selection-card ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .selection-card li {
+            margin-bottom: 4px;
+            color: #475569;
+        }
+
+        .table-container {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            height: calc(100vh - 90px);
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f8fafc;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            font-size: 0.75rem;
+            color: #0f172a;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .legend-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, 0.25);
+        }
+
+
+        /* Mobile/narrow iframe handling - when sidebar is disabled, use full space */
+        @media (max-width: 800px) {
+            .layout:not(.sidebar-disabled) {
+                grid-template-columns: 1fr;
+            }
+
+            .layout:not(.sidebar-disabled) .sidebar {
+                height: 280px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .layout:not(.sidebar-disabled) .main {
+                height: calc(100vh - 280px);
+            }
+
+            /* When sidebar is disabled (iframe mode), ensure full viewport usage */
+            .layout.sidebar-disabled .main {
+                width: 100% !important;
+                height: 100vh !important;
+            }
+
+            .layout.sidebar-disabled .tab-panel {
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+            }
+
+            .layout.sidebar-disabled .network-panel {
+                width: 100% !important;
+                height: 100vh !important;
+                border-radius: 0 !important;
+                border: none !important;
+                max-width: none !important;
+            }
+
+            .layout.sidebar-disabled #networkCanvas {
+                width: 100% !important;
+                height: 100vh !important;
+                max-width: none !important;
+            }
+
+            /* Ensure iframe canvas takes full space on mobile */
+            canvas#networkCanvas {
+                width: 100% !important;
+                height: 100% !important;
+                min-width: 100% !important;
+                min-height: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h1>Knowledge Graph Explorer</h1>
+            <p>Search, highlight, and inspect entities and relations to understand how the graph fits together.</p>
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="section">
+                <h2>Search</h2>
+                <input id="searchInput" class="search-input" type="text" placeholder="Search for entities or
+                    relations" />
+                <div class="search-hint">Matches are highlighted. Press Escape to clear.</div>
+            </div>
+            <div class="section" id="selectionSection">
+                <h2>Selection</h2>
+                <div id="selectionDetails" class="selection-card">Click a node or relation in the network to inspect
+                    details.</div>
+            </div>
+            <div class="section">
+                <h2>Entity Clusters</h2>
+                <div id="clusterList" class="list"></div>
+            </div>
+            <div class="section">
+                <h2>Top Entities</h2>
+                <div id="topEntities" class="list"></div>
+            </div>
+            <div class="section">
+                <h2>Top Relations</h2>
+                <div id="topRelations" class="list"></div>
+            </div>
+        </aside>
+        <main class="main">
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar"></button>
+            <div class="tab-bar" style="padding-bottom: 10px; display: none;">
+                <button class="tab active" data-tab="network">Network</button>
+                <!-- <button class="tab" data-tab="relations">Relations</button>
+                <button class="tab" data-tab="insights">Insights</button> -->
+            </div>
+            <section id="network" class="tab-panel active">
+                <div class="network-panel">
+                    <canvas id="networkCanvas"></canvas>
+                </div>
+            </section>
+            <!-- <section id="relations" class="tab-panel">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Relation</th>
+                                <th>Object</th>
+                            </tr>
+                        </thead>
+                        <tbody id="relationsTable"></tbody>
+                    </table>
+                </div>
+            </section>
+            <section id="insights" class="tab-panel">
+                <div class="table-container" style="padding: 20px;">
+                    <div id="insightsContent"></div>
+                </div>
+            </section> -->
+        </main>
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script id="viz-data" type="application/json">
+{
+  "nodes": [
+    {
+      "id": "4.1 下线检查漏检率",
+      "label": "4.1 下线检查漏检率",
+      "cluster": null,
+      "color": "#a63fe7",
+      "degree": 4,
+      "indegree": 0,
+      "outdegree": 4,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "下线检查",
+        "汽车整车",
+        "考核期",
+        "质损车"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e48",
+          "e116",
+          "e171",
+          "e172"
+        ]
+      }
+    },
+    {
+      "id": "4.10 发运及时率",
+      "label": "4.10 发运及时率",
+      "cluster": null,
+      "color": "#d88745",
+      "degree": 6,
+      "indegree": 0,
+      "outdegree": 6,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "发运",
+        "约定时间",
+        "考核期",
+        "装车",
+        "调度指令",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e49",
+          "e50",
+          "e51",
+          "e117",
+          "e155",
+          "e173"
+        ]
+      }
+    },
+    {
+      "id": "4.11 备车及时率",
+      "label": "4.11 备车及时率",
+      "cluster": null,
+      "color": "#a235bd",
+      "degree": 6,
+      "indegree": 0,
+      "outdegree": 6,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "仓储方",
+        "备车",
+        "汽车整车",
+        "约定时间",
+        "考核期",
+        "调度指令"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e52",
+          "e53",
+          "e54",
+          "e118",
+          "e156",
+          "e174"
+        ]
+      }
+    },
+    {
+      "id": "4.12 到场准时率",
+      "label": "4.12 到场准时率",
+      "cluster": null,
+      "color": "#b8e161",
+      "degree": 7,
+      "indegree": 0,
+      "outdegree": 7,
+      "isRepresentative": false,
+      "radius": 32,
+      "neighbors": [
+        "到场",
+        "约定时间",
+        "考核期",
+        "装车地",
+        "调度指令",
+        "运输工具",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e55",
+          "e56",
+          "e57",
+          "e58",
+          "e119",
+          "e157",
+          "e175"
+        ]
+      }
+    },
+    {
+      "id": "4.13 装车及时率",
+      "label": "4.13 装车及时率",
+      "cluster": null,
+      "color": "#ae46d9",
+      "degree": 5,
+      "indegree": 0,
+      "outdegree": 5,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "考核期",
+        "装车",
+        "装车地",
+        "运输工具",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e59",
+          "e60",
+          "e61",
+          "e120",
+          "e176"
+        ]
+      }
+    },
+    {
+      "id": "4.14 运输及时率",
+      "label": "4.14 运输及时率",
+      "cluster": null,
+      "color": "#2e21d6",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "收车地",
+        "考核期",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e62",
+          "e121",
+          "e177"
+        ]
+      }
+    },
+    {
+      "id": "4.15 收车及时率",
+      "label": "4.15 收车及时率",
+      "cluster": null,
+      "color": "#b17bde",
+      "degree": 4,
+      "indegree": 0,
+      "outdegree": 4,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "仓储方",
+        "入库",
+        "收车",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e63",
+          "e64",
+          "e122",
+          "e178"
+        ]
+      }
+    },
+    {
+      "id": "4.16 运力保障率",
+      "label": "4.16 运力保障率",
+      "cluster": null,
+      "color": "#58cf66",
+      "degree": 2,
+      "indegree": 0,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "汽车整车",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e123",
+          "e179"
+        ]
+      }
+    },
+    {
+      "id": "4.17 运输监控设备完好率",
+      "label": "4.17 运输监控设备完好率",
+      "cluster": null,
+      "color": "#e06cb3",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "车辆运输车",
+        "运输监控设备"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e124",
+          "e180",
+          "e181"
+        ]
+      }
+    },
+    {
+      "id": "4.18 返单及时率",
+      "label": "4.18 返单及时率",
+      "cluster": null,
+      "color": "#27ec7a",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "运输单据",
+        "返单"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e65",
+          "e125",
+          "e182"
+        ]
+      }
+    },
+    {
+      "id": "4.2 交付质损率",
+      "label": "4.2 交付质损率",
+      "cluster": null,
+      "color": "#e8618a",
+      "degree": 5,
+      "indegree": 2,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "交付质损",
+        "仓储交付",
+        "汽车整车",
+        "考核期",
+        "运输交付"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e165",
+          "e167"
+        ],
+        "outgoing": [
+          "e66",
+          "e126",
+          "e183"
+        ]
+      }
+    },
+    {
+      "id": "4.3 运输质损率",
+      "label": "4.3 运输质损率",
+      "cluster": null,
+      "color": "#7b1acd",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "汽车整车",
+        "考核期",
+        "运输质损"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e67",
+          "e127",
+          "e184"
+        ]
+      }
+    },
+    {
+      "id": "4.4 仓储质损率",
+      "label": "4.4 仓储质损率",
+      "cluster": null,
+      "color": "#df7186",
+      "degree": 4,
+      "indegree": 1,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "仓储质损",
+        "出库",
+        "汽车整车",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e166"
+        ],
+        "outgoing": [
+          "e68",
+          "e128",
+          "e185"
+        ]
+      }
+    },
+    {
+      "id": "4.5 运输工具检验不合格率",
+      "label": "4.5 运输工具检验不合格率",
+      "cluster": null,
+      "color": "#c0f059",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "运输工具",
+        "运输工具检验"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e129",
+          "e186",
+          "e187"
+        ]
+      }
+    },
+    {
+      "id": "4.6 仓储设施不合格率",
+      "label": "4.6 仓储设施不合格率",
+      "cluster": null,
+      "color": "#515cee",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "仓储设施",
+        "仓储设施检查",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e130",
+          "e188",
+          "e189"
+        ]
+      }
+    },
+    {
+      "id": "4.7 单车物流质损成本率",
+      "label": "4.7 单车物流质损成本率",
+      "cluster": null,
+      "color": "#e9e33d",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "汽车整车",
+        "物流质损",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e69",
+          "e131",
+          "e190"
+        ]
+      }
+    },
+    {
+      "id": "4.8 订单及时率",
+      "label": "4.8 订单及时率",
+      "cluster": null,
+      "color": "#ef4662",
+      "degree": 5,
+      "indegree": 0,
+      "outdegree": 5,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "收货人",
+        "物流服务商",
+        "约定时间",
+        "考核期",
+        "运输订单"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e70",
+          "e71",
+          "e132",
+          "e158",
+          "e191"
+        ]
+      }
+    },
+    {
+      "id": "4.9 调度及时率",
+      "label": "4.9 调度及时率",
+      "cluster": null,
+      "color": "#e8794e",
+      "degree": 6,
+      "indegree": 0,
+      "outdegree": 6,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "物流服务商",
+        "约定时间",
+        "考核期",
+        "调度指令",
+        "运输订单",
+        "运输调度"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e72",
+          "e73",
+          "e74",
+          "e133",
+          "e159",
+          "e192"
+        ]
+      }
+    },
+    {
+      "id": "5.1 运输货损率",
+      "label": "5.1 运输货损率",
+      "cluster": null,
+      "color": "#a067e1",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "货损",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e75",
+          "e134",
+          "e193"
+        ]
+      }
+    },
+    {
+      "id": "5.10 运输车辆装载率",
+      "label": "5.10 运输车辆装载率",
+      "cluster": null,
+      "color": "#24e9ab",
+      "degree": 4,
+      "indegree": 0,
+      "outdegree": 4,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "考核期",
+        "车厢容积",
+        "运输车辆",
+        "额定载重量"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e76",
+          "e77",
+          "e135",
+          "e194"
+        ]
+      }
+    },
+    {
+      "id": "5.11 仓储库位摆放准确率",
+      "label": "5.11 仓储库位摆放准确率",
+      "cluster": null,
+      "color": "#8c3ce6",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "库位",
+        "考核期",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e136",
+          "e195",
+          "e196"
+        ]
+      }
+    },
+    {
+      "id": "5.12 先进先出执行率",
+      "label": "5.12 先进先出执行率",
+      "cluster": null,
+      "color": "#49eec5",
+      "degree": 5,
+      "indegree": 0,
+      "outdegree": 5,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "仓库",
+        "仓库抽检",
+        "先进先出",
+        "考核期",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e78",
+          "e79",
+          "e137",
+          "e197",
+          "e198"
+        ]
+      }
+    },
+    {
+      "id": "5.2 运输货差率",
+      "label": "5.2 运输货差率",
+      "cluster": null,
+      "color": "#cf8b42",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "货差",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e80",
+          "e138",
+          "e199"
+        ]
+      }
+    },
+    {
+      "id": "5.3 设备完好率",
+      "label": "5.3 设备完好率",
+      "cluster": null,
+      "color": "#9b29bc",
+      "degree": 2,
+      "indegree": 0,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "客户",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e3",
+          "e139"
+        ]
+      }
+    },
+    {
+      "id": "5.4 仓储货损率",
+      "label": "5.4 仓储货损率",
+      "cluster": null,
+      "color": "#8543c8",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "货损",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e81",
+          "e140",
+          "e200"
+        ]
+      }
+    },
+    {
+      "id": "5.5 仓储货差率",
+      "label": "5.5 仓储货差率",
+      "cluster": null,
+      "color": "#ead261",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "考核期",
+        "货差",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e82",
+          "e141",
+          "e201"
+        ]
+      }
+    },
+    {
+      "id": "5.6 流通加工合格率",
+      "label": "5.6 流通加工合格率",
+      "cluster": null,
+      "color": "#4330d0",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "流通加工",
+        "考核期",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e142",
+          "e202",
+          "e203"
+        ]
+      }
+    },
+    {
+      "id": "5.7 交付及时率",
+      "label": "5.7 交付及时率",
+      "cluster": null,
+      "color": "#3951c6",
+      "degree": 4,
+      "indegree": 0,
+      "outdegree": 4,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "交付",
+        "约定时间",
+        "考核期",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e143",
+          "e160",
+          "e204",
+          "e205"
+        ]
+      }
+    },
+    {
+      "id": "5.8 物流停线时间",
+      "label": "5.8 物流停线时间",
+      "cluster": null,
+      "color": "#7221e0",
+      "degree": 4,
+      "indegree": 0,
+      "outdegree": 4,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "供应商",
+        "物流服务商",
+        "生产停线",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e83",
+          "e108",
+          "e109",
+          "e144"
+        ]
+      }
+    },
+    {
+      "id": "5.9 运输车辆符合率",
+      "label": "5.9 运输车辆符合率",
+      "cluster": null,
+      "color": "#5b8cd6",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "客户",
+        "考核期",
+        "运输车辆"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e4",
+          "e145",
+          "e206"
+        ]
+      }
+    },
+    {
+      "id": "6.1 入库及时率",
+      "label": "6.1 入库及时率",
+      "cluster": null,
+      "color": "#28cb38",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "入库",
+        "售后服务备件",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e146",
+          "e207",
+          "e208"
+        ]
+      }
+    },
+    {
+      "id": "6.2 账实符合率",
+      "label": "6.2 账实符合率",
+      "cluster": null,
+      "color": "#dddb34",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "售后服务备件",
+        "盘点",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e147",
+          "e209",
+          "e210"
+        ]
+      }
+    },
+    {
+      "id": "6.3 保质期件占有率",
+      "label": "6.3 保质期件占有率",
+      "cluster": null,
+      "color": "#50e5ce",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "保质期",
+        "售后服务备件",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e84",
+          "e148",
+          "e211"
+        ]
+      }
+    },
+    {
+      "id": "6.4 售后服务备件包装破损率",
+      "label": "6.4 售后服务备件包装破损率",
+      "cluster": null,
+      "color": "#41cdab",
+      "degree": 5,
+      "indegree": 0,
+      "outdegree": 5,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "包装破损",
+        "售后服务备件",
+        "客户",
+        "客户订单",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e85",
+          "e86",
+          "e87",
+          "e149",
+          "e212"
+        ]
+      }
+    },
+    {
+      "id": "6.5 订单满足率",
+      "label": "6.5 订单满足率",
+      "cluster": null,
+      "color": "#dbf36e",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "售后服务备件",
+        "客户订单",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e150",
+          "e213",
+          "e214"
+        ]
+      }
+    },
+    {
+      "id": "6.6 出库及时率",
+      "label": "6.6 出库及时率",
+      "cluster": null,
+      "color": "#9919ce",
+      "degree": 3,
+      "indegree": 0,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "出库",
+        "售后服务备件",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e151",
+          "e215",
+          "e216"
+        ]
+      }
+    },
+    {
+      "id": "6.7 仓库服务交付差错率",
+      "label": "6.7 仓库服务交付差错率",
+      "cluster": null,
+      "color": "#67ea44",
+      "degree": 6,
+      "indegree": 0,
+      "outdegree": 6,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "交付",
+        "仓库",
+        "售后服务备件",
+        "客户",
+        "客户订单",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e88",
+          "e89",
+          "e90",
+          "e91",
+          "e152",
+          "e217"
+        ]
+      }
+    },
+    {
+      "id": "6.8 售后服务备件紧急订单运输及时率",
+      "label": "6.8 售后服务备件紧急订单运输及时率",
+      "cluster": null,
+      "color": "#db76c7",
+      "degree": 6,
+      "indegree": 0,
+      "outdegree": 6,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "售后服务备件",
+        "收货人",
+        "物流服务商",
+        "紧急订单",
+        "约定时间",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e92",
+          "e93",
+          "e153",
+          "e161",
+          "e218",
+          "e219"
+        ]
+      }
+    },
+    {
+      "id": "6.9 售后服务备件普通订单运输及时率",
+      "label": "6.9 售后服务备件普通订单运输及时率",
+      "cluster": null,
+      "color": "#44ccd8",
+      "degree": 6,
+      "indegree": 0,
+      "outdegree": 6,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "售后服务备件",
+        "收货人",
+        "普通订单",
+        "物流服务商",
+        "约定时间",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e94",
+          "e95",
+          "e154",
+          "e162",
+          "e220",
+          "e221"
+        ]
+      }
+    },
+    {
+      "id": "下线检查",
+      "label": "下线检查",
+      "cluster": null,
+      "color": "#73db7d",
+      "degree": 3,
+      "indegree": 2,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "4.1 下线检查漏检率",
+        "汽车整车",
+        "质损车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e16",
+          "e171"
+        ],
+        "outgoing": [
+          "e45"
+        ]
+      }
+    },
+    {
+      "id": "交付",
+      "label": "交付",
+      "cluster": null,
+      "color": "#edeb59",
+      "degree": 6,
+      "indegree": 3,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 30,
+      "neighbors": [
+        "5.7 交付及时率",
+        "6.7 仓库服务交付差错率",
+        "交付质损",
+        "售后服务备件",
+        "客户",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e17",
+          "e88",
+          "e204"
+        ],
+        "outgoing": [
+          "e96",
+          "e97",
+          "e223"
+        ]
+      }
+    },
+    {
+      "id": "交付质损",
+      "label": "交付质损",
+      "cluster": null,
+      "color": "#3cd91d",
+      "degree": 3,
+      "indegree": 1,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "4.2 交付质损率",
+        "交付",
+        "汽车整车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e66"
+        ],
+        "outgoing": [
+          "e17",
+          "e31"
+        ]
+      }
+    },
+    {
+      "id": "仓储交付",
+      "label": "仓储交付",
+      "cluster": null,
+      "color": "#d478da",
+      "degree": 1,
+      "indegree": 0,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 20,
+      "neighbors": [
+        "4.2 交付质损率"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e165"
+        ]
+      }
+    },
+    {
+      "id": "仓储方",
+      "label": "仓储方",
+      "cluster": null,
+      "color": "#20cd96",
+      "degree": 5,
+      "indegree": 4,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "4.11 备车及时率",
+        "4.15 收车及时率",
+        "备车",
+        "收车",
+        "调度指令"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e112",
+          "e113",
+          "e174",
+          "e178"
+        ],
+        "outgoing": [
+          "e38"
+        ]
+      }
+    },
+    {
+      "id": "仓储设施",
+      "label": "仓储设施",
+      "cluster": null,
+      "color": "#e65379",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.6 仓储设施不合格率",
+        "仓储设施检查"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e46",
+          "e188"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "仓储设施检查",
+      "label": "仓储设施检查",
+      "cluster": null,
+      "color": "#89cf5b",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.6 仓储设施不合格率",
+        "仓储设施"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e189"
+        ],
+        "outgoing": [
+          "e46"
+        ]
+      }
+    },
+    {
+      "id": "仓储质损",
+      "label": "仓储质损",
+      "cluster": null,
+      "color": "#365fbc",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.4 仓储质损率",
+        "汽车整车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e68"
+        ],
+        "outgoing": [
+          "e32"
+        ]
+      }
+    },
+    {
+      "id": "仓库",
+      "label": "仓库",
+      "cluster": null,
+      "color": "#e8398c",
+      "degree": 4,
+      "indegree": 3,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "5.12 先进先出执行率",
+        "6.7 仓库服务交付差错率",
+        "仓库抽检",
+        "售后服务备件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e78",
+          "e110",
+          "e217"
+        ],
+        "outgoing": [
+          "e0"
+        ]
+      }
+    },
+    {
+      "id": "仓库抽检",
+      "label": "仓库抽检",
+      "cluster": null,
+      "color": "#4de1d1",
+      "degree": 4,
+      "indegree": 1,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "5.12 先进先出执行率",
+        "仓库",
+        "先进先出",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e197"
+        ],
+        "outgoing": [
+          "e5",
+          "e98",
+          "e110"
+        ]
+      }
+    },
+    {
+      "id": "供应商",
+      "label": "供应商",
+      "cluster": null,
+      "color": "#1bd371",
+      "degree": 1,
+      "indegree": 1,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 20,
+      "neighbors": [
+        "5.8 物流停线时间"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e108"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "保质期",
+      "label": "保质期",
+      "cluster": null,
+      "color": "#56e91c",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "6.3 保质期件占有率",
+        "售后服务备件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e9",
+          "e84"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "先进先出",
+      "label": "先进先出",
+      "cluster": null,
+      "color": "#c3f169",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "5.12 先进先出执行率",
+        "仓库抽检"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e5",
+          "e198"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "入库",
+      "label": "入库",
+      "cluster": null,
+      "color": "#a7da5f",
+      "degree": 4,
+      "indegree": 3,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.15 收车及时率",
+        "6.1 入库及时率",
+        "售后服务备件",
+        "收车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e15",
+          "e63",
+          "e207"
+        ],
+        "outgoing": [
+          "e99"
+        ]
+      }
+    },
+    {
+      "id": "出库",
+      "label": "出库",
+      "cluster": null,
+      "color": "#df2c56",
+      "degree": 3,
+      "indegree": 1,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "4.4 仓储质损率",
+        "6.6 出库及时率",
+        "售后服务备件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e215"
+        ],
+        "outgoing": [
+          "e100",
+          "e166"
+        ]
+      }
+    },
+    {
+      "id": "到场",
+      "label": "到场",
+      "cluster": null,
+      "color": "#cc1f58",
+      "degree": 4,
+      "indegree": 2,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.12 到场准时率",
+        "装车地",
+        "调度指令",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e55",
+          "e168"
+        ],
+        "outgoing": [
+          "e6",
+          "e18"
+        ]
+      }
+    },
+    {
+      "id": "包装破损",
+      "label": "包装破损",
+      "cluster": null,
+      "color": "#d1609d",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "6.4 售后服务备件包装破损率",
+        "售后服务备件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e85"
+        ],
+        "outgoing": [
+          "e33"
+        ]
+      }
+    },
+    {
+      "id": "发运",
+      "label": "发运",
+      "cluster": null,
+      "color": "#13bcd6",
+      "degree": 4,
+      "indegree": 1,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.10 发运及时率",
+        "装车",
+        "调度指令",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e49"
+        ],
+        "outgoing": [
+          "e7",
+          "e14",
+          "e111"
+        ]
+      }
+    },
+    {
+      "id": "售后服务备件",
+      "label": "售后服务备件",
+      "cluster": null,
+      "color": "#9ff268",
+      "degree": 22,
+      "indegree": 21,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "6.1 入库及时率",
+        "6.2 账实符合率",
+        "6.3 保质期件占有率",
+        "6.4 售后服务备件包装破损率",
+        "6.5 订单满足率",
+        "6.6 出库及时率",
+        "6.7 仓库服务交付差错率",
+        "6.8 售后服务备件紧急订单运输及时率",
+        "6.9 售后服务备件普通订单运输及时率",
+        "交付",
+        "仓库",
+        "保质期",
+        "入库",
+        "出库",
+        "包装破损",
+        "客户",
+        "客户订单",
+        "普通订单",
+        "盘点",
+        "紧急订单"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e0",
+          "e33",
+          "e39",
+          "e89",
+          "e92",
+          "e94",
+          "e96",
+          "e99",
+          "e100",
+          "e102",
+          "e103",
+          "e105",
+          "e106",
+          "e163",
+          "e208",
+          "e209",
+          "e211",
+          "e212",
+          "e213",
+          "e216",
+          "e222"
+        ],
+        "outgoing": [
+          "e9"
+        ]
+      }
+    },
+    {
+      "id": "备车",
+      "label": "备车",
+      "cluster": null,
+      "color": "#64b2e3",
+      "degree": 4,
+      "indegree": 1,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.11 备车及时率",
+        "仓储方",
+        "汽车整车",
+        "调度指令"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e52"
+        ],
+        "outgoing": [
+          "e8",
+          "e101",
+          "e112"
+        ]
+      }
+    },
+    {
+      "id": "客户",
+      "label": "客户",
+      "cluster": null,
+      "color": "#e0d744",
+      "degree": 9,
+      "indegree": 8,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "5.3 设备完好率",
+        "5.9 运输车辆符合率",
+        "6.4 售后服务备件包装破损率",
+        "6.7 仓库服务交付差错率",
+        "交付",
+        "售后服务备件",
+        "客户订单",
+        "普通订单",
+        "紧急订单"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e3",
+          "e4",
+          "e22",
+          "e23",
+          "e25",
+          "e86",
+          "e90",
+          "e223"
+        ],
+        "outgoing": [
+          "e39"
+        ]
+      }
+    },
+    {
+      "id": "客户订单",
+      "label": "客户订单",
+      "cluster": null,
+      "color": "#ca5fde",
+      "degree": 9,
+      "indegree": 5,
+      "outdegree": 4,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "6.4 售后服务备件包装破损率",
+        "6.5 订单满足率",
+        "6.7 仓库服务交付差错率",
+        "售后服务备件",
+        "客户",
+        "普通订单",
+        "紧急订单"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e24",
+          "e26",
+          "e87",
+          "e91",
+          "e214"
+        ],
+        "outgoing": [
+          "e22",
+          "e102",
+          "e163",
+          "e222"
+        ]
+      }
+    },
+    {
+      "id": "库位",
+      "label": "库位",
+      "cluster": null,
+      "color": "#dc4814",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "5.11 仓储库位摆放准确率",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e44",
+          "e195"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "收货人",
+      "label": "收货人",
+      "cluster": null,
+      "color": "#5473d7",
+      "degree": 4,
+      "indegree": 4,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.8 订单及时率",
+        "6.8 售后服务备件紧急订单运输及时率",
+        "6.9 售后服务备件普通订单运输及时率",
+        "物流服务商"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e1",
+          "e70",
+          "e93",
+          "e95"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "收车",
+      "label": "收车",
+      "cluster": null,
+      "color": "#e34c73",
+      "degree": 3,
+      "indegree": 1,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "4.15 收车及时率",
+        "仓储方",
+        "入库"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e64"
+        ],
+        "outgoing": [
+          "e15",
+          "e113"
+        ]
+      }
+    },
+    {
+      "id": "收车地",
+      "label": "收车地",
+      "cluster": null,
+      "color": "#7353ec",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.14 运输及时率",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e13",
+          "e62"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "普通订单",
+      "label": "普通订单",
+      "cluster": null,
+      "color": "#e21747",
+      "degree": 5,
+      "indegree": 2,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "6.9 售后服务备件普通订单运输及时率",
+        "售后服务备件",
+        "客户",
+        "客户订单",
+        "物流服务商"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e40",
+          "e220"
+        ],
+        "outgoing": [
+          "e23",
+          "e24",
+          "e103"
+        ]
+      }
+    },
+    {
+      "id": "汽车整车",
+      "label": "汽车整车",
+      "cluster": null,
+      "color": "#cb52e5",
+      "degree": 15,
+      "indegree": 15,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.1 下线检查漏检率",
+        "4.11 备车及时率",
+        "4.16 运力保障率",
+        "4.2 交付质损率",
+        "4.3 运输质损率",
+        "4.4 仓储质损率",
+        "4.7 单车物流质损成本率",
+        "下线检查",
+        "交付质损",
+        "仓储质损",
+        "备车",
+        "物流质损",
+        "质损车",
+        "运输工具",
+        "运输质损"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e28",
+          "e31",
+          "e32",
+          "e34",
+          "e37",
+          "e45",
+          "e53",
+          "e101",
+          "e107",
+          "e172",
+          "e179",
+          "e183",
+          "e184",
+          "e185",
+          "e190"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "流通加工",
+      "label": "流通加工",
+      "cluster": null,
+      "color": "#ea9b61",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "5.6 流通加工合格率",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e202"
+        ],
+        "outgoing": [
+          "e104"
+        ]
+      }
+    },
+    {
+      "id": "物流服务商",
+      "label": "物流服务商",
+      "cluster": null,
+      "color": "#e75353",
+      "degree": 11,
+      "indegree": 6,
+      "outdegree": 5,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.8 订单及时率",
+        "4.9 调度及时率",
+        "5.8 物流停线时间",
+        "6.8 售后服务备件紧急订单运输及时率",
+        "6.9 售后服务备件普通订单运输及时率",
+        "收货人",
+        "普通订单",
+        "紧急订单",
+        "调度指令",
+        "运输订单",
+        "运输调度"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e109",
+          "e115",
+          "e191",
+          "e192",
+          "e218",
+          "e221"
+        ],
+        "outgoing": [
+          "e1",
+          "e21",
+          "e40",
+          "e41",
+          "e42"
+        ]
+      }
+    },
+    {
+      "id": "物流质损",
+      "label": "物流质损",
+      "cluster": null,
+      "color": "#d1c030",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.7 单车物流质损成本率",
+        "汽车整车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e69"
+        ],
+        "outgoing": [
+          "e34"
+        ]
+      }
+    },
+    {
+      "id": "生产停线",
+      "label": "生产停线",
+      "cluster": null,
+      "color": "#a464da",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "5.8 物流停线时间",
+        "考核期"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e83"
+        ],
+        "outgoing": [
+          "e19"
+        ]
+      }
+    },
+    {
+      "id": "盘点",
+      "label": "盘点",
+      "cluster": null,
+      "color": "#9e47cb",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "6.2 账实符合率",
+        "售后服务备件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e210"
+        ],
+        "outgoing": [
+          "e105"
+        ]
+      }
+    },
+    {
+      "id": "紧急订单",
+      "label": "紧急订单",
+      "cluster": null,
+      "color": "#40ee40",
+      "degree": 5,
+      "indegree": 2,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "6.8 售后服务备件紧急订单运输及时率",
+        "售后服务备件",
+        "客户",
+        "客户订单",
+        "物流服务商"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e41",
+          "e219"
+        ],
+        "outgoing": [
+          "e25",
+          "e26",
+          "e106"
+        ]
+      }
+    },
+    {
+      "id": "约定时间",
+      "label": "约定时间",
+      "cluster": null,
+      "color": "#ec53dc",
+      "degree": 8,
+      "indegree": 8,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.10 发运及时率",
+        "4.11 备车及时率",
+        "4.12 到场准时率",
+        "4.8 订单及时率",
+        "4.9 调度及时率",
+        "5.7 交付及时率",
+        "6.8 售后服务备件紧急订单运输及时率",
+        "6.9 售后服务备件普通订单运输及时率"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e155",
+          "e156",
+          "e157",
+          "e158",
+          "e159",
+          "e160",
+          "e161",
+          "e162"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "考核期",
+      "label": "考核期",
+      "cluster": null,
+      "color": "#12e39b",
+      "degree": 40,
+      "indegree": 40,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.1 下线检查漏检率",
+        "4.10 发运及时率",
+        "4.11 备车及时率",
+        "4.12 到场准时率",
+        "4.13 装车及时率",
+        "4.14 运输及时率",
+        "4.15 收车及时率",
+        "4.16 运力保障率",
+        "4.17 运输监控设备完好率",
+        "4.18 返单及时率",
+        "4.2 交付质损率",
+        "4.3 运输质损率",
+        "4.4 仓储质损率",
+        "4.5 运输工具检验不合格率",
+        "4.6 仓储设施不合格率",
+        "4.7 单车物流质损成本率",
+        "4.8 订单及时率",
+        "4.9 调度及时率",
+        "5.1 运输货损率",
+        "5.10 运输车辆装载率",
+        "5.11 仓储库位摆放准确率",
+        "5.12 先进先出执行率",
+        "5.2 运输货差率",
+        "5.3 设备完好率",
+        "5.4 仓储货损率",
+        "5.5 仓储货差率",
+        "5.6 流通加工合格率",
+        "5.7 交付及时率",
+        "5.8 物流停线时间",
+        "5.9 运输车辆符合率",
+        "6.1 入库及时率",
+        "6.2 账实符合率",
+        "6.3 保质期件占有率",
+        "6.4 售后服务备件包装破损率",
+        "6.5 订单满足率",
+        "6.6 出库及时率",
+        "6.7 仓库服务交付差错率",
+        "6.8 售后服务备件紧急订单运输及时率",
+        "6.9 售后服务备件普通订单运输及时率",
+        "生产停线"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e19",
+          "e116",
+          "e117",
+          "e118",
+          "e119",
+          "e120",
+          "e121",
+          "e122",
+          "e123",
+          "e124",
+          "e125",
+          "e126",
+          "e127",
+          "e128",
+          "e129",
+          "e130",
+          "e131",
+          "e132",
+          "e133",
+          "e134",
+          "e135",
+          "e136",
+          "e137",
+          "e138",
+          "e139",
+          "e140",
+          "e141",
+          "e142",
+          "e143",
+          "e144",
+          "e145",
+          "e146",
+          "e147",
+          "e148",
+          "e149",
+          "e150",
+          "e151",
+          "e152",
+          "e153",
+          "e154"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "船",
+      "label": "船",
+      "cluster": null,
+      "color": "#40b0ea",
+      "degree": 1,
+      "indegree": 0,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 20,
+      "neighbors": [
+        "运输工具"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e27"
+        ]
+      }
+    },
+    {
+      "id": "装车",
+      "label": "装车",
+      "cluster": null,
+      "color": "#9655cd",
+      "degree": 5,
+      "indegree": 3,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "4.10 发运及时率",
+        "4.13 装车及时率",
+        "发运",
+        "装车地",
+        "运输方"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e14",
+          "e50",
+          "e59"
+        ],
+        "outgoing": [
+          "e20",
+          "e114"
+        ]
+      }
+    },
+    {
+      "id": "装车地",
+      "label": "装车地",
+      "cluster": null,
+      "color": "#50dc9c",
+      "degree": 5,
+      "indegree": 5,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 28,
+      "neighbors": [
+        "4.12 到场准时率",
+        "4.13 装车及时率",
+        "到场",
+        "装车",
+        "运输工具"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e12",
+          "e18",
+          "e20",
+          "e56",
+          "e60"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "调度指令",
+      "label": "调度指令",
+      "cluster": null,
+      "color": "#896fe9",
+      "degree": 11,
+      "indegree": 11,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.10 发运及时率",
+        "4.11 备车及时率",
+        "4.12 到场准时率",
+        "4.9 调度及时率",
+        "仓储方",
+        "到场",
+        "发运",
+        "备车",
+        "物流服务商",
+        "运输方",
+        "运输调度"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e6",
+          "e7",
+          "e8",
+          "e21",
+          "e38",
+          "e43",
+          "e51",
+          "e54",
+          "e57",
+          "e72",
+          "e169"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "货差",
+      "label": "货差",
+      "cluster": null,
+      "color": "#9827d3",
+      "degree": 3,
+      "indegree": 2,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "5.2 运输货差率",
+        "5.5 仓储货差率",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e80",
+          "e82"
+        ],
+        "outgoing": [
+          "e35"
+        ]
+      }
+    },
+    {
+      "id": "货损",
+      "label": "货损",
+      "cluster": null,
+      "color": "#e08a56",
+      "degree": 3,
+      "indegree": 2,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "5.1 运输货损率",
+        "5.4 仓储货损率",
+        "零部件"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e75",
+          "e81"
+        ],
+        "outgoing": [
+          "e36"
+        ]
+      }
+    },
+    {
+      "id": "质损车",
+      "label": "质损车",
+      "cluster": null,
+      "color": "#8629c7",
+      "degree": 3,
+      "indegree": 1,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "4.1 下线检查漏检率",
+        "下线检查",
+        "汽车整车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e48"
+        ],
+        "outgoing": [
+          "e16",
+          "e28"
+        ]
+      }
+    },
+    {
+      "id": "车厢容积",
+      "label": "车厢容积",
+      "cluster": null,
+      "color": "#6076d2",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "5.10 运输车辆装载率",
+        "运输车辆"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e10",
+          "e76"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "车辆运输车",
+      "label": "车辆运输车",
+      "cluster": null,
+      "color": "#e1d03f",
+      "degree": 3,
+      "indegree": 1,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 24,
+      "neighbors": [
+        "4.17 运输监控设备完好率",
+        "运输工具",
+        "运输监控设备"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e180"
+        ],
+        "outgoing": [
+          "e2",
+          "e29"
+        ]
+      }
+    },
+    {
+      "id": "运输交付",
+      "label": "运输交付",
+      "cluster": null,
+      "color": "#d984dc",
+      "degree": 1,
+      "indegree": 0,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 20,
+      "neighbors": [
+        "4.2 交付质损率"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e167"
+        ]
+      }
+    },
+    {
+      "id": "运输单据",
+      "label": "运输单据",
+      "cluster": null,
+      "color": "#df339c",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.18 返单及时率",
+        "返单"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e65",
+          "e170"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "运输工具",
+      "label": "运输工具",
+      "cluster": null,
+      "color": "#dfcb1d",
+      "degree": 9,
+      "indegree": 7,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.12 到场准时率",
+        "4.13 装车及时率",
+        "4.5 运输工具检验不合格率",
+        "汽车整车",
+        "船",
+        "装车地",
+        "车辆运输车",
+        "运输工具检验",
+        "铁路货车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e27",
+          "e29",
+          "e30",
+          "e47",
+          "e58",
+          "e61",
+          "e186"
+        ],
+        "outgoing": [
+          "e12",
+          "e107"
+        ]
+      }
+    },
+    {
+      "id": "运输工具检验",
+      "label": "运输工具检验",
+      "cluster": null,
+      "color": "#80e197",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.5 运输工具检验不合格率",
+        "运输工具"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e187"
+        ],
+        "outgoing": [
+          "e47"
+        ]
+      }
+    },
+    {
+      "id": "运输方",
+      "label": "运输方",
+      "cluster": null,
+      "color": "#3846d2",
+      "degree": 9,
+      "indegree": 6,
+      "outdegree": 3,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "4.10 发运及时率",
+        "4.12 到场准时率",
+        "4.13 装车及时率",
+        "4.14 运输及时率",
+        "到场",
+        "发运",
+        "收车地",
+        "装车",
+        "调度指令"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e111",
+          "e114",
+          "e173",
+          "e175",
+          "e176",
+          "e177"
+        ],
+        "outgoing": [
+          "e13",
+          "e43",
+          "e168"
+        ]
+      }
+    },
+    {
+      "id": "运输监控设备",
+      "label": "运输监控设备",
+      "cluster": null,
+      "color": "#5737cb",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.17 运输监控设备完好率",
+        "车辆运输车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e2",
+          "e181"
+        ],
+        "outgoing": []
+      }
+    },
+    {
+      "id": "运输订单",
+      "label": "运输订单",
+      "cluster": null,
+      "color": "#76f06d",
+      "degree": 4,
+      "indegree": 3,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.8 订单及时率",
+        "4.9 调度及时率",
+        "物流服务商",
+        "运输调度"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e42",
+          "e71",
+          "e73"
+        ],
+        "outgoing": [
+          "e164"
+        ]
+      }
+    },
+    {
+      "id": "运输调度",
+      "label": "运输调度",
+      "cluster": null,
+      "color": "#319eb9",
+      "degree": 4,
+      "indegree": 2,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "4.9 调度及时率",
+        "物流服务商",
+        "调度指令",
+        "运输订单"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e74",
+          "e164"
+        ],
+        "outgoing": [
+          "e115",
+          "e169"
+        ]
+      }
+    },
+    {
+      "id": "运输质损",
+      "label": "运输质损",
+      "cluster": null,
+      "color": "#3c6fe1",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.3 运输质损率",
+        "汽车整车"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e67"
+        ],
+        "outgoing": [
+          "e37"
+        ]
+      }
+    },
+    {
+      "id": "运输车辆",
+      "label": "运输车辆",
+      "cluster": null,
+      "color": "#6178f0",
+      "degree": 4,
+      "indegree": 2,
+      "outdegree": 2,
+      "isRepresentative": false,
+      "radius": 26,
+      "neighbors": [
+        "5.10 运输车辆装载率",
+        "5.9 运输车辆符合率",
+        "车厢容积",
+        "额定载重量"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e194",
+          "e206"
+        ],
+        "outgoing": [
+          "e10",
+          "e11"
+        ]
+      }
+    },
+    {
+      "id": "返单",
+      "label": "返单",
+      "cluster": null,
+      "color": "#5952eb",
+      "degree": 2,
+      "indegree": 1,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "4.18 返单及时率",
+        "运输单据"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e182"
+        ],
+        "outgoing": [
+          "e170"
+        ]
+      }
+    },
+    {
+      "id": "铁路货车",
+      "label": "铁路货车",
+      "cluster": null,
+      "color": "#2cd8c6",
+      "degree": 1,
+      "indegree": 0,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 20,
+      "neighbors": [
+        "运输工具"
+      ],
+      "edgeIds": {
+        "incoming": [],
+        "outgoing": [
+          "e30"
+        ]
+      }
+    },
+    {
+      "id": "零部件",
+      "label": "零部件",
+      "cluster": null,
+      "color": "#e96a16",
+      "degree": 14,
+      "indegree": 13,
+      "outdegree": 1,
+      "isRepresentative": false,
+      "radius": 34,
+      "neighbors": [
+        "5.1 运输货损率",
+        "5.11 仓储库位摆放准确率",
+        "5.12 先进先出执行率",
+        "5.2 运输货差率",
+        "5.4 仓储货损率",
+        "5.5 仓储货差率",
+        "5.6 流通加工合格率",
+        "5.7 交付及时率",
+        "交付",
+        "仓库抽检",
+        "库位",
+        "流通加工",
+        "货差",
+        "货损"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e35",
+          "e36",
+          "e79",
+          "e97",
+          "e98",
+          "e104",
+          "e193",
+          "e196",
+          "e199",
+          "e200",
+          "e201",
+          "e203",
+          "e205"
+        ],
+        "outgoing": [
+          "e44"
+        ]
+      }
+    },
+    {
+      "id": "额定载重量",
+      "label": "额定载重量",
+      "cluster": null,
+      "color": "#1f6be8",
+      "degree": 2,
+      "indegree": 2,
+      "outdegree": 0,
+      "isRepresentative": false,
+      "radius": 22,
+      "neighbors": [
+        "5.10 运输车辆装载率",
+        "运输车辆"
+      ],
+      "edgeIds": {
+        "incoming": [
+          "e11",
+          "e77"
+        ],
+        "outgoing": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "source": "仓库",
+      "target": "售后服务备件",
+      "predicate": "交付",
+      "cluster": null,
+      "color": "#32d3a7",
+      "tooltip": "仓库 —交付→ 售后服务备件"
+    },
+    {
+      "id": "e1",
+      "source": "物流服务商",
+      "target": "收货人",
+      "predicate": "交付",
+      "cluster": null,
+      "color": "#32d3a7",
+      "tooltip": "物流服务商 —交付→ 收货人"
+    },
+    {
+      "id": "e2",
+      "source": "车辆运输车",
+      "target": "运输监控设备",
+      "predicate": "使用",
+      "cluster": null,
+      "color": "#f27572",
+      "tooltip": "车辆运输车 —使用→ 运输监控设备"
+    },
+    {
+      "id": "e3",
+      "source": "5.3 设备完好率",
+      "target": "客户",
+      "predicate": "依据",
+      "cluster": null,
+      "color": "#dc4f17",
+      "tooltip": "5.3 设备完好率 —依据→ 客户"
+    },
+    {
+      "id": "e4",
+      "source": "5.9 运输车辆符合率",
+      "target": "客户",
+      "predicate": "依据",
+      "cluster": null,
+      "color": "#dc4f17",
+      "tooltip": "5.9 运输车辆符合率 —依据→ 客户"
+    },
+    {
+      "id": "e5",
+      "source": "仓库抽检",
+      "target": "先进先出",
+      "predicate": "依据",
+      "cluster": null,
+      "color": "#dc4f17",
+      "tooltip": "仓库抽检 —依据→ 先进先出"
+    },
+    {
+      "id": "e6",
+      "source": "到场",
+      "target": "调度指令",
+      "predicate": "依据",
+      "cluster": null,
+      "color": "#dc4f17",
+      "tooltip": "到场 —依据→ 调度指令"
+    },
+    {
+      "id": "e7",
+      "source": "发运",
+      "target": "调度指令",
+      "predicate": "依据",
+      "cluster": null,
+      "color": "#dc4f17",
+      "tooltip": "发运 —依据→ 调度指令"
+    },
+    {
+      "id": "e8",
+      "source": "备车",
+      "target": "调度指令",
+      "predicate": "依据",
+      "cluster": null,
+      "color": "#dc4f17",
+      "tooltip": "备车 —依据→ 调度指令"
+    },
+    {
+      "id": "e9",
+      "source": "售后服务备件",
+      "target": "保质期",
+      "predicate": "具有",
+      "cluster": null,
+      "color": "#d540b7",
+      "tooltip": "售后服务备件 —具有→ 保质期"
+    },
+    {
+      "id": "e10",
+      "source": "运输车辆",
+      "target": "车厢容积",
+      "predicate": "具有",
+      "cluster": null,
+      "color": "#d540b7",
+      "tooltip": "运输车辆 —具有→ 车厢容积"
+    },
+    {
+      "id": "e11",
+      "source": "运输车辆",
+      "target": "额定载重量",
+      "predicate": "具有",
+      "cluster": null,
+      "color": "#d540b7",
+      "tooltip": "运输车辆 —具有→ 额定载重量"
+    },
+    {
+      "id": "e12",
+      "source": "运输工具",
+      "target": "装车地",
+      "predicate": "到达",
+      "cluster": null,
+      "color": "#d9dd61",
+      "tooltip": "运输工具 —到达→ 装车地"
+    },
+    {
+      "id": "e13",
+      "source": "运输方",
+      "target": "收车地",
+      "predicate": "到达",
+      "cluster": null,
+      "color": "#d9dd61",
+      "tooltip": "运输方 —到达→ 收车地"
+    },
+    {
+      "id": "e14",
+      "source": "发运",
+      "target": "装车",
+      "predicate": "包含",
+      "cluster": null,
+      "color": "#6b6bd7",
+      "tooltip": "发运 —包含→ 装车"
+    },
+    {
+      "id": "e15",
+      "source": "收车",
+      "target": "入库",
+      "predicate": "包含",
+      "cluster": null,
+      "color": "#6b6bd7",
+      "tooltip": "收车 —包含→ 入库"
+    },
+    {
+      "id": "e16",
+      "source": "质损车",
+      "target": "下线检查",
+      "predicate": "发现于",
+      "cluster": null,
+      "color": "#5ee5f1",
+      "tooltip": "质损车 —发现于→ 下线检查"
+    },
+    {
+      "id": "e17",
+      "source": "交付质损",
+      "target": "交付",
+      "predicate": "发生于",
+      "cluster": null,
+      "color": "#86cf45",
+      "tooltip": "交付质损 —发生于→ 交付"
+    },
+    {
+      "id": "e18",
+      "source": "到场",
+      "target": "装车地",
+      "predicate": "发生于",
+      "cluster": null,
+      "color": "#86cf45",
+      "tooltip": "到场 —发生于→ 装车地"
+    },
+    {
+      "id": "e19",
+      "source": "生产停线",
+      "target": "考核期",
+      "predicate": "发生于",
+      "cluster": null,
+      "color": "#86cf45",
+      "tooltip": "生产停线 —发生于→ 考核期"
+    },
+    {
+      "id": "e20",
+      "source": "装车",
+      "target": "装车地",
+      "predicate": "发生于",
+      "cluster": null,
+      "color": "#86cf45",
+      "tooltip": "装车 —发生于→ 装车地"
+    },
+    {
+      "id": "e21",
+      "source": "物流服务商",
+      "target": "调度指令",
+      "predicate": "发送",
+      "cluster": null,
+      "color": "#da76e3",
+      "tooltip": "物流服务商 —发送→ 调度指令"
+    },
+    {
+      "id": "e22",
+      "source": "客户订单",
+      "target": "客户",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "客户订单 —属于→ 客户"
+    },
+    {
+      "id": "e23",
+      "source": "普通订单",
+      "target": "客户",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "普通订单 —属于→ 客户"
+    },
+    {
+      "id": "e24",
+      "source": "普通订单",
+      "target": "客户订单",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "普通订单 —属于→ 客户订单"
+    },
+    {
+      "id": "e25",
+      "source": "紧急订单",
+      "target": "客户",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "紧急订单 —属于→ 客户"
+    },
+    {
+      "id": "e26",
+      "source": "紧急订单",
+      "target": "客户订单",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "紧急订单 —属于→ 客户订单"
+    },
+    {
+      "id": "e27",
+      "source": "船",
+      "target": "运输工具",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "船 —属于→ 运输工具"
+    },
+    {
+      "id": "e28",
+      "source": "质损车",
+      "target": "汽车整车",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "质损车 —属于→ 汽车整车"
+    },
+    {
+      "id": "e29",
+      "source": "车辆运输车",
+      "target": "运输工具",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "车辆运输车 —属于→ 运输工具"
+    },
+    {
+      "id": "e30",
+      "source": "铁路货车",
+      "target": "运输工具",
+      "predicate": "属于",
+      "cluster": null,
+      "color": "#20a0d5",
+      "tooltip": "铁路货车 —属于→ 运输工具"
+    },
+    {
+      "id": "e31",
+      "source": "交付质损",
+      "target": "汽车整车",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "交付质损 —影响→ 汽车整车"
+    },
+    {
+      "id": "e32",
+      "source": "仓储质损",
+      "target": "汽车整车",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "仓储质损 —影响→ 汽车整车"
+    },
+    {
+      "id": "e33",
+      "source": "包装破损",
+      "target": "售后服务备件",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "包装破损 —影响→ 售后服务备件"
+    },
+    {
+      "id": "e34",
+      "source": "物流质损",
+      "target": "汽车整车",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "物流质损 —影响→ 汽车整车"
+    },
+    {
+      "id": "e35",
+      "source": "货差",
+      "target": "零部件",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "货差 —影响→ 零部件"
+    },
+    {
+      "id": "e36",
+      "source": "货损",
+      "target": "零部件",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "货损 —影响→ 零部件"
+    },
+    {
+      "id": "e37",
+      "source": "运输质损",
+      "target": "汽车整车",
+      "predicate": "影响",
+      "cluster": null,
+      "color": "#77bedc",
+      "tooltip": "运输质损 —影响→ 汽车整车"
+    },
+    {
+      "id": "e38",
+      "source": "仓储方",
+      "target": "调度指令",
+      "predicate": "接收",
+      "cluster": null,
+      "color": "#c732ed",
+      "tooltip": "仓储方 —接收→ 调度指令"
+    },
+    {
+      "id": "e39",
+      "source": "客户",
+      "target": "售后服务备件",
+      "predicate": "接收",
+      "cluster": null,
+      "color": "#c732ed",
+      "tooltip": "客户 —接收→ 售后服务备件"
+    },
+    {
+      "id": "e40",
+      "source": "物流服务商",
+      "target": "普通订单",
+      "predicate": "接收",
+      "cluster": null,
+      "color": "#c732ed",
+      "tooltip": "物流服务商 —接收→ 普通订单"
+    },
+    {
+      "id": "e41",
+      "source": "物流服务商",
+      "target": "紧急订单",
+      "predicate": "接收",
+      "cluster": null,
+      "color": "#c732ed",
+      "tooltip": "物流服务商 —接收→ 紧急订单"
+    },
+    {
+      "id": "e42",
+      "source": "物流服务商",
+      "target": "运输订单",
+      "predicate": "接收",
+      "cluster": null,
+      "color": "#c732ed",
+      "tooltip": "物流服务商 —接收→ 运输订单"
+    },
+    {
+      "id": "e43",
+      "source": "运输方",
+      "target": "调度指令",
+      "predicate": "接收",
+      "cluster": null,
+      "color": "#c732ed",
+      "tooltip": "运输方 —接收→ 调度指令"
+    },
+    {
+      "id": "e44",
+      "source": "零部件",
+      "target": "库位",
+      "predicate": "摆放于",
+      "cluster": null,
+      "color": "#ce375b",
+      "tooltip": "零部件 —摆放于→ 库位"
+    },
+    {
+      "id": "e45",
+      "source": "下线检查",
+      "target": "汽车整车",
+      "predicate": "检查",
+      "cluster": null,
+      "color": "#78ce1b",
+      "tooltip": "下线检查 —检查→ 汽车整车"
+    },
+    {
+      "id": "e46",
+      "source": "仓储设施检查",
+      "target": "仓储设施",
+      "predicate": "检查",
+      "cluster": null,
+      "color": "#78ce1b",
+      "tooltip": "仓储设施检查 —检查→ 仓储设施"
+    },
+    {
+      "id": "e47",
+      "source": "运输工具检验",
+      "target": "运输工具",
+      "predicate": "检验",
+      "cluster": null,
+      "color": "#18d7ac",
+      "tooltip": "运输工具检验 —检验→ 运输工具"
+    },
+    {
+      "id": "e48",
+      "source": "4.1 下线检查漏检率",
+      "target": "质损车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.1 下线检查漏检率 —涉及→ 质损车"
+    },
+    {
+      "id": "e49",
+      "source": "4.10 发运及时率",
+      "target": "发运",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.10 发运及时率 —涉及→ 发运"
+    },
+    {
+      "id": "e50",
+      "source": "4.10 发运及时率",
+      "target": "装车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.10 发运及时率 —涉及→ 装车"
+    },
+    {
+      "id": "e51",
+      "source": "4.10 发运及时率",
+      "target": "调度指令",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.10 发运及时率 —涉及→ 调度指令"
+    },
+    {
+      "id": "e52",
+      "source": "4.11 备车及时率",
+      "target": "备车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.11 备车及时率 —涉及→ 备车"
+    },
+    {
+      "id": "e53",
+      "source": "4.11 备车及时率",
+      "target": "汽车整车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.11 备车及时率 —涉及→ 汽车整车"
+    },
+    {
+      "id": "e54",
+      "source": "4.11 备车及时率",
+      "target": "调度指令",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.11 备车及时率 —涉及→ 调度指令"
+    },
+    {
+      "id": "e55",
+      "source": "4.12 到场准时率",
+      "target": "到场",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.12 到场准时率 —涉及→ 到场"
+    },
+    {
+      "id": "e56",
+      "source": "4.12 到场准时率",
+      "target": "装车地",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.12 到场准时率 —涉及→ 装车地"
+    },
+    {
+      "id": "e57",
+      "source": "4.12 到场准时率",
+      "target": "调度指令",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.12 到场准时率 —涉及→ 调度指令"
+    },
+    {
+      "id": "e58",
+      "source": "4.12 到场准时率",
+      "target": "运输工具",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.12 到场准时率 —涉及→ 运输工具"
+    },
+    {
+      "id": "e59",
+      "source": "4.13 装车及时率",
+      "target": "装车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.13 装车及时率 —涉及→ 装车"
+    },
+    {
+      "id": "e60",
+      "source": "4.13 装车及时率",
+      "target": "装车地",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.13 装车及时率 —涉及→ 装车地"
+    },
+    {
+      "id": "e61",
+      "source": "4.13 装车及时率",
+      "target": "运输工具",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.13 装车及时率 —涉及→ 运输工具"
+    },
+    {
+      "id": "e62",
+      "source": "4.14 运输及时率",
+      "target": "收车地",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.14 运输及时率 —涉及→ 收车地"
+    },
+    {
+      "id": "e63",
+      "source": "4.15 收车及时率",
+      "target": "入库",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.15 收车及时率 —涉及→ 入库"
+    },
+    {
+      "id": "e64",
+      "source": "4.15 收车及时率",
+      "target": "收车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.15 收车及时率 —涉及→ 收车"
+    },
+    {
+      "id": "e65",
+      "source": "4.18 返单及时率",
+      "target": "运输单据",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.18 返单及时率 —涉及→ 运输单据"
+    },
+    {
+      "id": "e66",
+      "source": "4.2 交付质损率",
+      "target": "交付质损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.2 交付质损率 —涉及→ 交付质损"
+    },
+    {
+      "id": "e67",
+      "source": "4.3 运输质损率",
+      "target": "运输质损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.3 运输质损率 —涉及→ 运输质损"
+    },
+    {
+      "id": "e68",
+      "source": "4.4 仓储质损率",
+      "target": "仓储质损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.4 仓储质损率 —涉及→ 仓储质损"
+    },
+    {
+      "id": "e69",
+      "source": "4.7 单车物流质损成本率",
+      "target": "物流质损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.7 单车物流质损成本率 —涉及→ 物流质损"
+    },
+    {
+      "id": "e70",
+      "source": "4.8 订单及时率",
+      "target": "收货人",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.8 订单及时率 —涉及→ 收货人"
+    },
+    {
+      "id": "e71",
+      "source": "4.8 订单及时率",
+      "target": "运输订单",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.8 订单及时率 —涉及→ 运输订单"
+    },
+    {
+      "id": "e72",
+      "source": "4.9 调度及时率",
+      "target": "调度指令",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.9 调度及时率 —涉及→ 调度指令"
+    },
+    {
+      "id": "e73",
+      "source": "4.9 调度及时率",
+      "target": "运输订单",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.9 调度及时率 —涉及→ 运输订单"
+    },
+    {
+      "id": "e74",
+      "source": "4.9 调度及时率",
+      "target": "运输调度",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "4.9 调度及时率 —涉及→ 运输调度"
+    },
+    {
+      "id": "e75",
+      "source": "5.1 运输货损率",
+      "target": "货损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.1 运输货损率 —涉及→ 货损"
+    },
+    {
+      "id": "e76",
+      "source": "5.10 运输车辆装载率",
+      "target": "车厢容积",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.10 运输车辆装载率 —涉及→ 车厢容积"
+    },
+    {
+      "id": "e77",
+      "source": "5.10 运输车辆装载率",
+      "target": "额定载重量",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.10 运输车辆装载率 —涉及→ 额定载重量"
+    },
+    {
+      "id": "e78",
+      "source": "5.12 先进先出执行率",
+      "target": "仓库",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.12 先进先出执行率 —涉及→ 仓库"
+    },
+    {
+      "id": "e79",
+      "source": "5.12 先进先出执行率",
+      "target": "零部件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.12 先进先出执行率 —涉及→ 零部件"
+    },
+    {
+      "id": "e80",
+      "source": "5.2 运输货差率",
+      "target": "货差",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.2 运输货差率 —涉及→ 货差"
+    },
+    {
+      "id": "e81",
+      "source": "5.4 仓储货损率",
+      "target": "货损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.4 仓储货损率 —涉及→ 货损"
+    },
+    {
+      "id": "e82",
+      "source": "5.5 仓储货差率",
+      "target": "货差",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.5 仓储货差率 —涉及→ 货差"
+    },
+    {
+      "id": "e83",
+      "source": "5.8 物流停线时间",
+      "target": "生产停线",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "5.8 物流停线时间 —涉及→ 生产停线"
+    },
+    {
+      "id": "e84",
+      "source": "6.3 保质期件占有率",
+      "target": "保质期",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.3 保质期件占有率 —涉及→ 保质期"
+    },
+    {
+      "id": "e85",
+      "source": "6.4 售后服务备件包装破损率",
+      "target": "包装破损",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.4 售后服务备件包装破损率 —涉及→ 包装破损"
+    },
+    {
+      "id": "e86",
+      "source": "6.4 售后服务备件包装破损率",
+      "target": "客户",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.4 售后服务备件包装破损率 —涉及→ 客户"
+    },
+    {
+      "id": "e87",
+      "source": "6.4 售后服务备件包装破损率",
+      "target": "客户订单",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.4 售后服务备件包装破损率 —涉及→ 客户订单"
+    },
+    {
+      "id": "e88",
+      "source": "6.7 仓库服务交付差错率",
+      "target": "交付",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.7 仓库服务交付差错率 —涉及→ 交付"
+    },
+    {
+      "id": "e89",
+      "source": "6.7 仓库服务交付差错率",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.7 仓库服务交付差错率 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e90",
+      "source": "6.7 仓库服务交付差错率",
+      "target": "客户",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.7 仓库服务交付差错率 —涉及→ 客户"
+    },
+    {
+      "id": "e91",
+      "source": "6.7 仓库服务交付差错率",
+      "target": "客户订单",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.7 仓库服务交付差错率 —涉及→ 客户订单"
+    },
+    {
+      "id": "e92",
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.8 售后服务备件紧急订单运输及时率 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e93",
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "target": "收货人",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.8 售后服务备件紧急订单运输及时率 —涉及→ 收货人"
+    },
+    {
+      "id": "e94",
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.9 售后服务备件普通订单运输及时率 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e95",
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "target": "收货人",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "6.9 售后服务备件普通订单运输及时率 —涉及→ 收货人"
+    },
+    {
+      "id": "e96",
+      "source": "交付",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "交付 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e97",
+      "source": "交付",
+      "target": "零部件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "交付 —涉及→ 零部件"
+    },
+    {
+      "id": "e98",
+      "source": "仓库抽检",
+      "target": "零部件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "仓库抽检 —涉及→ 零部件"
+    },
+    {
+      "id": "e99",
+      "source": "入库",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "入库 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e100",
+      "source": "出库",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "出库 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e101",
+      "source": "备车",
+      "target": "汽车整车",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "备车 —涉及→ 汽车整车"
+    },
+    {
+      "id": "e102",
+      "source": "客户订单",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "客户订单 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e103",
+      "source": "普通订单",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "普通订单 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e104",
+      "source": "流通加工",
+      "target": "零部件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "流通加工 —涉及→ 零部件"
+    },
+    {
+      "id": "e105",
+      "source": "盘点",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "盘点 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e106",
+      "source": "紧急订单",
+      "target": "售后服务备件",
+      "predicate": "涉及",
+      "cluster": null,
+      "color": "#55e0b4",
+      "tooltip": "紧急订单 —涉及→ 售后服务备件"
+    },
+    {
+      "id": "e107",
+      "source": "运输工具",
+      "target": "汽车整车",
+      "predicate": "用于",
+      "cluster": null,
+      "color": "#4bdd7b",
+      "tooltip": "运输工具 —用于→ 汽车整车"
+    },
+    {
+      "id": "e108",
+      "source": "5.8 物流停线时间",
+      "target": "供应商",
+      "predicate": "用于考核",
+      "cluster": null,
+      "color": "#6ce2dd",
+      "tooltip": "5.8 物流停线时间 —用于考核→ 供应商"
+    },
+    {
+      "id": "e109",
+      "source": "5.8 物流停线时间",
+      "target": "物流服务商",
+      "predicate": "用于考核",
+      "cluster": null,
+      "color": "#6ce2dd",
+      "tooltip": "5.8 物流停线时间 —用于考核→ 物流服务商"
+    },
+    {
+      "id": "e110",
+      "source": "仓库抽检",
+      "target": "仓库",
+      "predicate": "由…执行",
+      "cluster": null,
+      "color": "#2f87cc",
+      "tooltip": "仓库抽检 —由…执行→ 仓库"
+    },
+    {
+      "id": "e111",
+      "source": "发运",
+      "target": "运输方",
+      "predicate": "由…执行",
+      "cluster": null,
+      "color": "#2f87cc",
+      "tooltip": "发运 —由…执行→ 运输方"
+    },
+    {
+      "id": "e112",
+      "source": "备车",
+      "target": "仓储方",
+      "predicate": "由…执行",
+      "cluster": null,
+      "color": "#2f87cc",
+      "tooltip": "备车 —由…执行→ 仓储方"
+    },
+    {
+      "id": "e113",
+      "source": "收车",
+      "target": "仓储方",
+      "predicate": "由…执行",
+      "cluster": null,
+      "color": "#2f87cc",
+      "tooltip": "收车 —由…执行→ 仓储方"
+    },
+    {
+      "id": "e114",
+      "source": "装车",
+      "target": "运输方",
+      "predicate": "由…执行",
+      "cluster": null,
+      "color": "#2f87cc",
+      "tooltip": "装车 —由…执行→ 运输方"
+    },
+    {
+      "id": "e115",
+      "source": "运输调度",
+      "target": "物流服务商",
+      "predicate": "由…执行",
+      "cluster": null,
+      "color": "#2f87cc",
+      "tooltip": "运输调度 —由…执行→ 物流服务商"
+    },
+    {
+      "id": "e116",
+      "source": "4.1 下线检查漏检率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.1 下线检查漏检率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e117",
+      "source": "4.10 发运及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.10 发运及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e118",
+      "source": "4.11 备车及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.11 备车及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e119",
+      "source": "4.12 到场准时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.12 到场准时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e120",
+      "source": "4.13 装车及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.13 装车及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e121",
+      "source": "4.14 运输及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.14 运输及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e122",
+      "source": "4.15 收车及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.15 收车及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e123",
+      "source": "4.16 运力保障率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.16 运力保障率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e124",
+      "source": "4.17 运输监控设备完好率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.17 运输监控设备完好率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e125",
+      "source": "4.18 返单及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.18 返单及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e126",
+      "source": "4.2 交付质损率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.2 交付质损率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e127",
+      "source": "4.3 运输质损率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.3 运输质损率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e128",
+      "source": "4.4 仓储质损率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.4 仓储质损率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e129",
+      "source": "4.5 运输工具检验不合格率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.5 运输工具检验不合格率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e130",
+      "source": "4.6 仓储设施不合格率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.6 仓储设施不合格率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e131",
+      "source": "4.7 单车物流质损成本率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.7 单车物流质损成本率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e132",
+      "source": "4.8 订单及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.8 订单及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e133",
+      "source": "4.9 调度及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "4.9 调度及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e134",
+      "source": "5.1 运输货损率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.1 运输货损率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e135",
+      "source": "5.10 运输车辆装载率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.10 运输车辆装载率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e136",
+      "source": "5.11 仓储库位摆放准确率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.11 仓储库位摆放准确率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e137",
+      "source": "5.12 先进先出执行率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.12 先进先出执行率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e138",
+      "source": "5.2 运输货差率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.2 运输货差率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e139",
+      "source": "5.3 设备完好率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.3 设备完好率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e140",
+      "source": "5.4 仓储货损率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.4 仓储货损率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e141",
+      "source": "5.5 仓储货差率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.5 仓储货差率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e142",
+      "source": "5.6 流通加工合格率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.6 流通加工合格率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e143",
+      "source": "5.7 交付及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.7 交付及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e144",
+      "source": "5.8 物流停线时间",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.8 物流停线时间 —统计期间→ 考核期"
+    },
+    {
+      "id": "e145",
+      "source": "5.9 运输车辆符合率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "5.9 运输车辆符合率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e146",
+      "source": "6.1 入库及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.1 入库及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e147",
+      "source": "6.2 账实符合率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.2 账实符合率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e148",
+      "source": "6.3 保质期件占有率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.3 保质期件占有率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e149",
+      "source": "6.4 售后服务备件包装破损率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.4 售后服务备件包装破损率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e150",
+      "source": "6.5 订单满足率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.5 订单满足率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e151",
+      "source": "6.6 出库及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.6 出库及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e152",
+      "source": "6.7 仓库服务交付差错率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.7 仓库服务交付差错率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e153",
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.8 售后服务备件紧急订单运输及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e154",
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "target": "考核期",
+      "predicate": "统计期间",
+      "cluster": null,
+      "color": "#95d84d",
+      "tooltip": "6.9 售后服务备件普通订单运输及时率 —统计期间→ 考核期"
+    },
+    {
+      "id": "e155",
+      "source": "4.10 发运及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "4.10 发运及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e156",
+      "source": "4.11 备车及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "4.11 备车及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e157",
+      "source": "4.12 到场准时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "4.12 到场准时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e158",
+      "source": "4.8 订单及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "4.8 订单及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e159",
+      "source": "4.9 调度及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "4.9 调度及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e160",
+      "source": "5.7 交付及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "5.7 交付及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e161",
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "6.8 售后服务备件紧急订单运输及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e162",
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "target": "约定时间",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "6.9 售后服务备件普通订单运输及时率 —要求→ 约定时间"
+    },
+    {
+      "id": "e163",
+      "source": "客户订单",
+      "target": "售后服务备件",
+      "predicate": "要求",
+      "cluster": null,
+      "color": "#d71165",
+      "tooltip": "客户订单 —要求→ 售后服务备件"
+    },
+    {
+      "id": "e164",
+      "source": "运输订单",
+      "target": "运输调度",
+      "predicate": "触发",
+      "cluster": null,
+      "color": "#58d567",
+      "tooltip": "运输订单 —触发→ 运输调度"
+    },
+    {
+      "id": "e165",
+      "source": "仓储交付",
+      "target": "4.2 交付质损率",
+      "predicate": "计入",
+      "cluster": null,
+      "color": "#4ad3cb",
+      "tooltip": "仓储交付 —计入→ 4.2 交付质损率"
+    },
+    {
+      "id": "e166",
+      "source": "出库",
+      "target": "4.4 仓储质损率",
+      "predicate": "计入",
+      "cluster": null,
+      "color": "#4ad3cb",
+      "tooltip": "出库 —计入→ 4.4 仓储质损率"
+    },
+    {
+      "id": "e167",
+      "source": "运输交付",
+      "target": "4.2 交付质损率",
+      "predicate": "计入",
+      "cluster": null,
+      "color": "#4ad3cb",
+      "tooltip": "运输交付 —计入→ 4.2 交付质损率"
+    },
+    {
+      "id": "e168",
+      "source": "运输方",
+      "target": "到场",
+      "predicate": "负责",
+      "cluster": null,
+      "color": "#be43d4",
+      "tooltip": "运输方 —负责→ 到场"
+    },
+    {
+      "id": "e169",
+      "source": "运输调度",
+      "target": "调度指令",
+      "predicate": "输出",
+      "cluster": null,
+      "color": "#549cd3",
+      "tooltip": "运输调度 —输出→ 调度指令"
+    },
+    {
+      "id": "e170",
+      "source": "返单",
+      "target": "运输单据",
+      "predicate": "返回",
+      "cluster": null,
+      "color": "#da2929",
+      "tooltip": "返单 —返回→ 运输单据"
+    },
+    {
+      "id": "e171",
+      "source": "4.1 下线检查漏检率",
+      "target": "下线检查",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.1 下线检查漏检率 —适用于→ 下线检查"
+    },
+    {
+      "id": "e172",
+      "source": "4.1 下线检查漏检率",
+      "target": "汽车整车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.1 下线检查漏检率 —适用于→ 汽车整车"
+    },
+    {
+      "id": "e173",
+      "source": "4.10 发运及时率",
+      "target": "运输方",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.10 发运及时率 —适用于→ 运输方"
+    },
+    {
+      "id": "e174",
+      "source": "4.11 备车及时率",
+      "target": "仓储方",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.11 备车及时率 —适用于→ 仓储方"
+    },
+    {
+      "id": "e175",
+      "source": "4.12 到场准时率",
+      "target": "运输方",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.12 到场准时率 —适用于→ 运输方"
+    },
+    {
+      "id": "e176",
+      "source": "4.13 装车及时率",
+      "target": "运输方",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.13 装车及时率 —适用于→ 运输方"
+    },
+    {
+      "id": "e177",
+      "source": "4.14 运输及时率",
+      "target": "运输方",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.14 运输及时率 —适用于→ 运输方"
+    },
+    {
+      "id": "e178",
+      "source": "4.15 收车及时率",
+      "target": "仓储方",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.15 收车及时率 —适用于→ 仓储方"
+    },
+    {
+      "id": "e179",
+      "source": "4.16 运力保障率",
+      "target": "汽车整车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.16 运力保障率 —适用于→ 汽车整车"
+    },
+    {
+      "id": "e180",
+      "source": "4.17 运输监控设备完好率",
+      "target": "车辆运输车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.17 运输监控设备完好率 —适用于→ 车辆运输车"
+    },
+    {
+      "id": "e181",
+      "source": "4.17 运输监控设备完好率",
+      "target": "运输监控设备",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.17 运输监控设备完好率 —适用于→ 运输监控设备"
+    },
+    {
+      "id": "e182",
+      "source": "4.18 返单及时率",
+      "target": "返单",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.18 返单及时率 —适用于→ 返单"
+    },
+    {
+      "id": "e183",
+      "source": "4.2 交付质损率",
+      "target": "汽车整车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.2 交付质损率 —适用于→ 汽车整车"
+    },
+    {
+      "id": "e184",
+      "source": "4.3 运输质损率",
+      "target": "汽车整车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.3 运输质损率 —适用于→ 汽车整车"
+    },
+    {
+      "id": "e185",
+      "source": "4.4 仓储质损率",
+      "target": "汽车整车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.4 仓储质损率 —适用于→ 汽车整车"
+    },
+    {
+      "id": "e186",
+      "source": "4.5 运输工具检验不合格率",
+      "target": "运输工具",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.5 运输工具检验不合格率 —适用于→ 运输工具"
+    },
+    {
+      "id": "e187",
+      "source": "4.5 运输工具检验不合格率",
+      "target": "运输工具检验",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.5 运输工具检验不合格率 —适用于→ 运输工具检验"
+    },
+    {
+      "id": "e188",
+      "source": "4.6 仓储设施不合格率",
+      "target": "仓储设施",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.6 仓储设施不合格率 —适用于→ 仓储设施"
+    },
+    {
+      "id": "e189",
+      "source": "4.6 仓储设施不合格率",
+      "target": "仓储设施检查",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.6 仓储设施不合格率 —适用于→ 仓储设施检查"
+    },
+    {
+      "id": "e190",
+      "source": "4.7 单车物流质损成本率",
+      "target": "汽车整车",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.7 单车物流质损成本率 —适用于→ 汽车整车"
+    },
+    {
+      "id": "e191",
+      "source": "4.8 订单及时率",
+      "target": "物流服务商",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.8 订单及时率 —适用于→ 物流服务商"
+    },
+    {
+      "id": "e192",
+      "source": "4.9 调度及时率",
+      "target": "物流服务商",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "4.9 调度及时率 —适用于→ 物流服务商"
+    },
+    {
+      "id": "e193",
+      "source": "5.1 运输货损率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.1 运输货损率 —适用于→ 零部件"
+    },
+    {
+      "id": "e194",
+      "source": "5.10 运输车辆装载率",
+      "target": "运输车辆",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.10 运输车辆装载率 —适用于→ 运输车辆"
+    },
+    {
+      "id": "e195",
+      "source": "5.11 仓储库位摆放准确率",
+      "target": "库位",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.11 仓储库位摆放准确率 —适用于→ 库位"
+    },
+    {
+      "id": "e196",
+      "source": "5.11 仓储库位摆放准确率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.11 仓储库位摆放准确率 —适用于→ 零部件"
+    },
+    {
+      "id": "e197",
+      "source": "5.12 先进先出执行率",
+      "target": "仓库抽检",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.12 先进先出执行率 —适用于→ 仓库抽检"
+    },
+    {
+      "id": "e198",
+      "source": "5.12 先进先出执行率",
+      "target": "先进先出",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.12 先进先出执行率 —适用于→ 先进先出"
+    },
+    {
+      "id": "e199",
+      "source": "5.2 运输货差率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.2 运输货差率 —适用于→ 零部件"
+    },
+    {
+      "id": "e200",
+      "source": "5.4 仓储货损率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.4 仓储货损率 —适用于→ 零部件"
+    },
+    {
+      "id": "e201",
+      "source": "5.5 仓储货差率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.5 仓储货差率 —适用于→ 零部件"
+    },
+    {
+      "id": "e202",
+      "source": "5.6 流通加工合格率",
+      "target": "流通加工",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.6 流通加工合格率 —适用于→ 流通加工"
+    },
+    {
+      "id": "e203",
+      "source": "5.6 流通加工合格率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.6 流通加工合格率 —适用于→ 零部件"
+    },
+    {
+      "id": "e204",
+      "source": "5.7 交付及时率",
+      "target": "交付",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.7 交付及时率 —适用于→ 交付"
+    },
+    {
+      "id": "e205",
+      "source": "5.7 交付及时率",
+      "target": "零部件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.7 交付及时率 —适用于→ 零部件"
+    },
+    {
+      "id": "e206",
+      "source": "5.9 运输车辆符合率",
+      "target": "运输车辆",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "5.9 运输车辆符合率 —适用于→ 运输车辆"
+    },
+    {
+      "id": "e207",
+      "source": "6.1 入库及时率",
+      "target": "入库",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.1 入库及时率 —适用于→ 入库"
+    },
+    {
+      "id": "e208",
+      "source": "6.1 入库及时率",
+      "target": "售后服务备件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.1 入库及时率 —适用于→ 售后服务备件"
+    },
+    {
+      "id": "e209",
+      "source": "6.2 账实符合率",
+      "target": "售后服务备件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.2 账实符合率 —适用于→ 售后服务备件"
+    },
+    {
+      "id": "e210",
+      "source": "6.2 账实符合率",
+      "target": "盘点",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.2 账实符合率 —适用于→ 盘点"
+    },
+    {
+      "id": "e211",
+      "source": "6.3 保质期件占有率",
+      "target": "售后服务备件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.3 保质期件占有率 —适用于→ 售后服务备件"
+    },
+    {
+      "id": "e212",
+      "source": "6.4 售后服务备件包装破损率",
+      "target": "售后服务备件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.4 售后服务备件包装破损率 —适用于→ 售后服务备件"
+    },
+    {
+      "id": "e213",
+      "source": "6.5 订单满足率",
+      "target": "售后服务备件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.5 订单满足率 —适用于→ 售后服务备件"
+    },
+    {
+      "id": "e214",
+      "source": "6.5 订单满足率",
+      "target": "客户订单",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.5 订单满足率 —适用于→ 客户订单"
+    },
+    {
+      "id": "e215",
+      "source": "6.6 出库及时率",
+      "target": "出库",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.6 出库及时率 —适用于→ 出库"
+    },
+    {
+      "id": "e216",
+      "source": "6.6 出库及时率",
+      "target": "售后服务备件",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.6 出库及时率 —适用于→ 售后服务备件"
+    },
+    {
+      "id": "e217",
+      "source": "6.7 仓库服务交付差错率",
+      "target": "仓库",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.7 仓库服务交付差错率 —适用于→ 仓库"
+    },
+    {
+      "id": "e218",
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "target": "物流服务商",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.8 售后服务备件紧急订单运输及时率 —适用于→ 物流服务商"
+    },
+    {
+      "id": "e219",
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "target": "紧急订单",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.8 售后服务备件紧急订单运输及时率 —适用于→ 紧急订单"
+    },
+    {
+      "id": "e220",
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "target": "普通订单",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.9 售后服务备件普通订单运输及时率 —适用于→ 普通订单"
+    },
+    {
+      "id": "e221",
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "target": "物流服务商",
+      "predicate": "适用于",
+      "cluster": null,
+      "color": "#67a3ed",
+      "tooltip": "6.9 售后服务备件普通订单运输及时率 —适用于→ 物流服务商"
+    },
+    {
+      "id": "e222",
+      "source": "客户订单",
+      "target": "售后服务备件",
+      "predicate": "需求",
+      "cluster": null,
+      "color": "#ee9e63",
+      "tooltip": "客户订单 —需求→ 售后服务备件"
+    },
+    {
+      "id": "e223",
+      "source": "交付",
+      "target": "客户",
+      "predicate": "面向",
+      "cluster": null,
+      "color": "#ea70e6",
+      "tooltip": "交付 —面向→ 客户"
+    }
+  ],
+  "clusters": [],
+  "edgeClusters": [],
+  "topEntities": [
+    {
+      "label": "考核期",
+      "degree": 40,
+      "indegree": 40,
+      "outdegree": 0,
+      "cluster": null
+    },
+    {
+      "label": "售后服务备件",
+      "degree": 22,
+      "indegree": 21,
+      "outdegree": 1,
+      "cluster": null
+    },
+    {
+      "label": "汽车整车",
+      "degree": 15,
+      "indegree": 15,
+      "outdegree": 0,
+      "cluster": null
+    },
+    {
+      "label": "零部件",
+      "degree": 14,
+      "indegree": 13,
+      "outdegree": 1,
+      "cluster": null
+    },
+    {
+      "label": "物流服务商",
+      "degree": 11,
+      "indegree": 6,
+      "outdegree": 5,
+      "cluster": null
+    },
+    {
+      "label": "调度指令",
+      "degree": 11,
+      "indegree": 11,
+      "outdegree": 0,
+      "cluster": null
+    },
+    {
+      "label": "客户",
+      "degree": 9,
+      "indegree": 8,
+      "outdegree": 1,
+      "cluster": null
+    },
+    {
+      "label": "客户订单",
+      "degree": 9,
+      "indegree": 5,
+      "outdegree": 4,
+      "cluster": null
+    },
+    {
+      "label": "运输工具",
+      "degree": 9,
+      "indegree": 7,
+      "outdegree": 2,
+      "cluster": null
+    },
+    {
+      "label": "运输方",
+      "degree": 9,
+      "indegree": 6,
+      "outdegree": 3,
+      "cluster": null
+    }
+  ],
+  "topRelations": [
+    {
+      "predicate": "涉及",
+      "count": 59,
+      "cluster": null,
+      "color": "#55e0b4"
+    },
+    {
+      "predicate": "适用于",
+      "count": 51,
+      "cluster": null,
+      "color": "#67a3ed"
+    },
+    {
+      "predicate": "统计期间",
+      "count": 39,
+      "cluster": null,
+      "color": "#95d84d"
+    },
+    {
+      "predicate": "属于",
+      "count": 9,
+      "cluster": null,
+      "color": "#20a0d5"
+    },
+    {
+      "predicate": "要求",
+      "count": 9,
+      "cluster": null,
+      "color": "#d71165"
+    },
+    {
+      "predicate": "影响",
+      "count": 7,
+      "cluster": null,
+      "color": "#77bedc"
+    },
+    {
+      "predicate": "依据",
+      "count": 6,
+      "cluster": null,
+      "color": "#dc4f17"
+    },
+    {
+      "predicate": "接收",
+      "count": 6,
+      "cluster": null,
+      "color": "#c732ed"
+    },
+    {
+      "predicate": "由…执行",
+      "count": 6,
+      "cluster": null,
+      "color": "#2f87cc"
+    },
+    {
+      "predicate": "发生于",
+      "count": 4,
+      "cluster": null,
+      "color": "#86cf45"
+    }
+  ],
+  "stats": {
+    "entities": 98,
+    "relations": 224,
+    "relationTypes": 29,
+    "entityClusters": 0,
+    "edgeClusters": 0,
+    "isolatedEntities": 0,
+    "components": 1,
+    "averageDegree": 4.57,
+    "density": 0.024
+  },
+  "isolatedEntities": [],
+  "components": [
+    {
+      "size": 98,
+      "members": [
+        "4.1 下线检查漏检率",
+        "4.10 发运及时率",
+        "4.11 备车及时率",
+        "4.12 到场准时率",
+        "4.13 装车及时率",
+        "4.14 运输及时率",
+        "4.15 收车及时率",
+        "4.16 运力保障率",
+        "4.17 运输监控设备完好率",
+        "4.18 返单及时率",
+        "4.2 交付质损率",
+        "4.3 运输质损率",
+        "4.4 仓储质损率",
+        "4.5 运输工具检验不合格率",
+        "4.6 仓储设施不合格率",
+        "4.7 单车物流质损成本率",
+        "4.8 订单及时率",
+        "4.9 调度及时率",
+        "5.1 运输货损率",
+        "5.10 运输车辆装载率",
+        "5.11 仓储库位摆放准确率",
+        "5.12 先进先出执行率",
+        "5.2 运输货差率",
+        "5.3 设备完好率",
+        "5.4 仓储货损率",
+        "5.5 仓储货差率",
+        "5.6 流通加工合格率",
+        "5.7 交付及时率",
+        "5.8 物流停线时间",
+        "5.9 运输车辆符合率",
+        "6.1 入库及时率",
+        "6.2 账实符合率",
+        "6.3 保质期件占有率",
+        "6.4 售后服务备件包装破损率",
+        "6.5 订单满足率",
+        "6.6 出库及时率",
+        "6.7 仓库服务交付差错率",
+        "6.8 售后服务备件紧急订单运输及时率",
+        "6.9 售后服务备件普通订单运输及时率",
+        "下线检查",
+        "交付",
+        "交付质损",
+        "仓储交付",
+        "仓储方",
+        "仓储设施",
+        "仓储设施检查",
+        "仓储质损",
+        "仓库",
+        "仓库抽检",
+        "供应商",
+        "保质期",
+        "先进先出",
+        "入库",
+        "出库",
+        "到场",
+        "包装破损",
+        "发运",
+        "售后服务备件",
+        "备车",
+        "客户",
+        "客户订单",
+        "库位",
+        "收货人",
+        "收车",
+        "收车地",
+        "普通订单",
+        "汽车整车",
+        "流通加工",
+        "物流服务商",
+        "物流质损",
+        "生产停线",
+        "盘点",
+        "紧急订单",
+        "约定时间",
+        "考核期",
+        "船",
+        "装车",
+        "装车地",
+        "调度指令",
+        "货差",
+        "货损",
+        "质损车",
+        "车厢容积",
+        "车辆运输车",
+        "运输交付",
+        "运输单据",
+        "运输工具",
+        "运输工具检验",
+        "运输方",
+        "运输监控设备",
+        "运输订单",
+        "运输调度",
+        "运输质损",
+        "运输车辆",
+        "返单",
+        "铁路货车",
+        "零部件",
+        "额定载重量"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "source": "仓库",
+      "predicate": "交付",
+      "target": "售后服务备件",
+      "edgeId": "e0",
+      "color": "#32d3a7"
+    },
+    {
+      "source": "物流服务商",
+      "predicate": "交付",
+      "target": "收货人",
+      "edgeId": "e1",
+      "color": "#32d3a7"
+    },
+    {
+      "source": "车辆运输车",
+      "predicate": "使用",
+      "target": "运输监控设备",
+      "edgeId": "e2",
+      "color": "#f27572"
+    },
+    {
+      "source": "5.3 设备完好率",
+      "predicate": "依据",
+      "target": "客户",
+      "edgeId": "e3",
+      "color": "#dc4f17"
+    },
+    {
+      "source": "5.9 运输车辆符合率",
+      "predicate": "依据",
+      "target": "客户",
+      "edgeId": "e4",
+      "color": "#dc4f17"
+    },
+    {
+      "source": "仓库抽检",
+      "predicate": "依据",
+      "target": "先进先出",
+      "edgeId": "e5",
+      "color": "#dc4f17"
+    },
+    {
+      "source": "到场",
+      "predicate": "依据",
+      "target": "调度指令",
+      "edgeId": "e6",
+      "color": "#dc4f17"
+    },
+    {
+      "source": "发运",
+      "predicate": "依据",
+      "target": "调度指令",
+      "edgeId": "e7",
+      "color": "#dc4f17"
+    },
+    {
+      "source": "备车",
+      "predicate": "依据",
+      "target": "调度指令",
+      "edgeId": "e8",
+      "color": "#dc4f17"
+    },
+    {
+      "source": "售后服务备件",
+      "predicate": "具有",
+      "target": "保质期",
+      "edgeId": "e9",
+      "color": "#d540b7"
+    },
+    {
+      "source": "运输车辆",
+      "predicate": "具有",
+      "target": "车厢容积",
+      "edgeId": "e10",
+      "color": "#d540b7"
+    },
+    {
+      "source": "运输车辆",
+      "predicate": "具有",
+      "target": "额定载重量",
+      "edgeId": "e11",
+      "color": "#d540b7"
+    },
+    {
+      "source": "运输工具",
+      "predicate": "到达",
+      "target": "装车地",
+      "edgeId": "e12",
+      "color": "#d9dd61"
+    },
+    {
+      "source": "运输方",
+      "predicate": "到达",
+      "target": "收车地",
+      "edgeId": "e13",
+      "color": "#d9dd61"
+    },
+    {
+      "source": "发运",
+      "predicate": "包含",
+      "target": "装车",
+      "edgeId": "e14",
+      "color": "#6b6bd7"
+    },
+    {
+      "source": "收车",
+      "predicate": "包含",
+      "target": "入库",
+      "edgeId": "e15",
+      "color": "#6b6bd7"
+    },
+    {
+      "source": "质损车",
+      "predicate": "发现于",
+      "target": "下线检查",
+      "edgeId": "e16",
+      "color": "#5ee5f1"
+    },
+    {
+      "source": "交付质损",
+      "predicate": "发生于",
+      "target": "交付",
+      "edgeId": "e17",
+      "color": "#86cf45"
+    },
+    {
+      "source": "到场",
+      "predicate": "发生于",
+      "target": "装车地",
+      "edgeId": "e18",
+      "color": "#86cf45"
+    },
+    {
+      "source": "生产停线",
+      "predicate": "发生于",
+      "target": "考核期",
+      "edgeId": "e19",
+      "color": "#86cf45"
+    },
+    {
+      "source": "装车",
+      "predicate": "发生于",
+      "target": "装车地",
+      "edgeId": "e20",
+      "color": "#86cf45"
+    },
+    {
+      "source": "物流服务商",
+      "predicate": "发送",
+      "target": "调度指令",
+      "edgeId": "e21",
+      "color": "#da76e3"
+    },
+    {
+      "source": "客户订单",
+      "predicate": "属于",
+      "target": "客户",
+      "edgeId": "e22",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "普通订单",
+      "predicate": "属于",
+      "target": "客户",
+      "edgeId": "e23",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "普通订单",
+      "predicate": "属于",
+      "target": "客户订单",
+      "edgeId": "e24",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "紧急订单",
+      "predicate": "属于",
+      "target": "客户",
+      "edgeId": "e25",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "紧急订单",
+      "predicate": "属于",
+      "target": "客户订单",
+      "edgeId": "e26",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "船",
+      "predicate": "属于",
+      "target": "运输工具",
+      "edgeId": "e27",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "质损车",
+      "predicate": "属于",
+      "target": "汽车整车",
+      "edgeId": "e28",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "车辆运输车",
+      "predicate": "属于",
+      "target": "运输工具",
+      "edgeId": "e29",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "铁路货车",
+      "predicate": "属于",
+      "target": "运输工具",
+      "edgeId": "e30",
+      "color": "#20a0d5"
+    },
+    {
+      "source": "交付质损",
+      "predicate": "影响",
+      "target": "汽车整车",
+      "edgeId": "e31",
+      "color": "#77bedc"
+    },
+    {
+      "source": "仓储质损",
+      "predicate": "影响",
+      "target": "汽车整车",
+      "edgeId": "e32",
+      "color": "#77bedc"
+    },
+    {
+      "source": "包装破损",
+      "predicate": "影响",
+      "target": "售后服务备件",
+      "edgeId": "e33",
+      "color": "#77bedc"
+    },
+    {
+      "source": "物流质损",
+      "predicate": "影响",
+      "target": "汽车整车",
+      "edgeId": "e34",
+      "color": "#77bedc"
+    },
+    {
+      "source": "货差",
+      "predicate": "影响",
+      "target": "零部件",
+      "edgeId": "e35",
+      "color": "#77bedc"
+    },
+    {
+      "source": "货损",
+      "predicate": "影响",
+      "target": "零部件",
+      "edgeId": "e36",
+      "color": "#77bedc"
+    },
+    {
+      "source": "运输质损",
+      "predicate": "影响",
+      "target": "汽车整车",
+      "edgeId": "e37",
+      "color": "#77bedc"
+    },
+    {
+      "source": "仓储方",
+      "predicate": "接收",
+      "target": "调度指令",
+      "edgeId": "e38",
+      "color": "#c732ed"
+    },
+    {
+      "source": "客户",
+      "predicate": "接收",
+      "target": "售后服务备件",
+      "edgeId": "e39",
+      "color": "#c732ed"
+    },
+    {
+      "source": "物流服务商",
+      "predicate": "接收",
+      "target": "普通订单",
+      "edgeId": "e40",
+      "color": "#c732ed"
+    },
+    {
+      "source": "物流服务商",
+      "predicate": "接收",
+      "target": "紧急订单",
+      "edgeId": "e41",
+      "color": "#c732ed"
+    },
+    {
+      "source": "物流服务商",
+      "predicate": "接收",
+      "target": "运输订单",
+      "edgeId": "e42",
+      "color": "#c732ed"
+    },
+    {
+      "source": "运输方",
+      "predicate": "接收",
+      "target": "调度指令",
+      "edgeId": "e43",
+      "color": "#c732ed"
+    },
+    {
+      "source": "零部件",
+      "predicate": "摆放于",
+      "target": "库位",
+      "edgeId": "e44",
+      "color": "#ce375b"
+    },
+    {
+      "source": "下线检查",
+      "predicate": "检查",
+      "target": "汽车整车",
+      "edgeId": "e45",
+      "color": "#78ce1b"
+    },
+    {
+      "source": "仓储设施检查",
+      "predicate": "检查",
+      "target": "仓储设施",
+      "edgeId": "e46",
+      "color": "#78ce1b"
+    },
+    {
+      "source": "运输工具检验",
+      "predicate": "检验",
+      "target": "运输工具",
+      "edgeId": "e47",
+      "color": "#18d7ac"
+    },
+    {
+      "source": "4.1 下线检查漏检率",
+      "predicate": "涉及",
+      "target": "质损车",
+      "edgeId": "e48",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.10 发运及时率",
+      "predicate": "涉及",
+      "target": "发运",
+      "edgeId": "e49",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.10 发运及时率",
+      "predicate": "涉及",
+      "target": "装车",
+      "edgeId": "e50",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.10 发运及时率",
+      "predicate": "涉及",
+      "target": "调度指令",
+      "edgeId": "e51",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.11 备车及时率",
+      "predicate": "涉及",
+      "target": "备车",
+      "edgeId": "e52",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.11 备车及时率",
+      "predicate": "涉及",
+      "target": "汽车整车",
+      "edgeId": "e53",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.11 备车及时率",
+      "predicate": "涉及",
+      "target": "调度指令",
+      "edgeId": "e54",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "涉及",
+      "target": "到场",
+      "edgeId": "e55",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "涉及",
+      "target": "装车地",
+      "edgeId": "e56",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "涉及",
+      "target": "调度指令",
+      "edgeId": "e57",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "涉及",
+      "target": "运输工具",
+      "edgeId": "e58",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.13 装车及时率",
+      "predicate": "涉及",
+      "target": "装车",
+      "edgeId": "e59",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.13 装车及时率",
+      "predicate": "涉及",
+      "target": "装车地",
+      "edgeId": "e60",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.13 装车及时率",
+      "predicate": "涉及",
+      "target": "运输工具",
+      "edgeId": "e61",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.14 运输及时率",
+      "predicate": "涉及",
+      "target": "收车地",
+      "edgeId": "e62",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.15 收车及时率",
+      "predicate": "涉及",
+      "target": "入库",
+      "edgeId": "e63",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.15 收车及时率",
+      "predicate": "涉及",
+      "target": "收车",
+      "edgeId": "e64",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.18 返单及时率",
+      "predicate": "涉及",
+      "target": "运输单据",
+      "edgeId": "e65",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.2 交付质损率",
+      "predicate": "涉及",
+      "target": "交付质损",
+      "edgeId": "e66",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.3 运输质损率",
+      "predicate": "涉及",
+      "target": "运输质损",
+      "edgeId": "e67",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.4 仓储质损率",
+      "predicate": "涉及",
+      "target": "仓储质损",
+      "edgeId": "e68",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.7 单车物流质损成本率",
+      "predicate": "涉及",
+      "target": "物流质损",
+      "edgeId": "e69",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.8 订单及时率",
+      "predicate": "涉及",
+      "target": "收货人",
+      "edgeId": "e70",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.8 订单及时率",
+      "predicate": "涉及",
+      "target": "运输订单",
+      "edgeId": "e71",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.9 调度及时率",
+      "predicate": "涉及",
+      "target": "调度指令",
+      "edgeId": "e72",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.9 调度及时率",
+      "predicate": "涉及",
+      "target": "运输订单",
+      "edgeId": "e73",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "4.9 调度及时率",
+      "predicate": "涉及",
+      "target": "运输调度",
+      "edgeId": "e74",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.1 运输货损率",
+      "predicate": "涉及",
+      "target": "货损",
+      "edgeId": "e75",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.10 运输车辆装载率",
+      "predicate": "涉及",
+      "target": "车厢容积",
+      "edgeId": "e76",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.10 运输车辆装载率",
+      "predicate": "涉及",
+      "target": "额定载重量",
+      "edgeId": "e77",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.12 先进先出执行率",
+      "predicate": "涉及",
+      "target": "仓库",
+      "edgeId": "e78",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.12 先进先出执行率",
+      "predicate": "涉及",
+      "target": "零部件",
+      "edgeId": "e79",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.2 运输货差率",
+      "predicate": "涉及",
+      "target": "货差",
+      "edgeId": "e80",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.4 仓储货损率",
+      "predicate": "涉及",
+      "target": "货损",
+      "edgeId": "e81",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.5 仓储货差率",
+      "predicate": "涉及",
+      "target": "货差",
+      "edgeId": "e82",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "5.8 物流停线时间",
+      "predicate": "涉及",
+      "target": "生产停线",
+      "edgeId": "e83",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.3 保质期件占有率",
+      "predicate": "涉及",
+      "target": "保质期",
+      "edgeId": "e84",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.4 售后服务备件包装破损率",
+      "predicate": "涉及",
+      "target": "包装破损",
+      "edgeId": "e85",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.4 售后服务备件包装破损率",
+      "predicate": "涉及",
+      "target": "客户",
+      "edgeId": "e86",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.4 售后服务备件包装破损率",
+      "predicate": "涉及",
+      "target": "客户订单",
+      "edgeId": "e87",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.7 仓库服务交付差错率",
+      "predicate": "涉及",
+      "target": "交付",
+      "edgeId": "e88",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.7 仓库服务交付差错率",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e89",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.7 仓库服务交付差错率",
+      "predicate": "涉及",
+      "target": "客户",
+      "edgeId": "e90",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.7 仓库服务交付差错率",
+      "predicate": "涉及",
+      "target": "客户订单",
+      "edgeId": "e91",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e92",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "predicate": "涉及",
+      "target": "收货人",
+      "edgeId": "e93",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e94",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "predicate": "涉及",
+      "target": "收货人",
+      "edgeId": "e95",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "交付",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e96",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "交付",
+      "predicate": "涉及",
+      "target": "零部件",
+      "edgeId": "e97",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "仓库抽检",
+      "predicate": "涉及",
+      "target": "零部件",
+      "edgeId": "e98",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "入库",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e99",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "出库",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e100",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "备车",
+      "predicate": "涉及",
+      "target": "汽车整车",
+      "edgeId": "e101",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "客户订单",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e102",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "普通订单",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e103",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "流通加工",
+      "predicate": "涉及",
+      "target": "零部件",
+      "edgeId": "e104",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "盘点",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e105",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "紧急订单",
+      "predicate": "涉及",
+      "target": "售后服务备件",
+      "edgeId": "e106",
+      "color": "#55e0b4"
+    },
+    {
+      "source": "运输工具",
+      "predicate": "用于",
+      "target": "汽车整车",
+      "edgeId": "e107",
+      "color": "#4bdd7b"
+    },
+    {
+      "source": "5.8 物流停线时间",
+      "predicate": "用于考核",
+      "target": "供应商",
+      "edgeId": "e108",
+      "color": "#6ce2dd"
+    },
+    {
+      "source": "5.8 物流停线时间",
+      "predicate": "用于考核",
+      "target": "物流服务商",
+      "edgeId": "e109",
+      "color": "#6ce2dd"
+    },
+    {
+      "source": "仓库抽检",
+      "predicate": "由…执行",
+      "target": "仓库",
+      "edgeId": "e110",
+      "color": "#2f87cc"
+    },
+    {
+      "source": "发运",
+      "predicate": "由…执行",
+      "target": "运输方",
+      "edgeId": "e111",
+      "color": "#2f87cc"
+    },
+    {
+      "source": "备车",
+      "predicate": "由…执行",
+      "target": "仓储方",
+      "edgeId": "e112",
+      "color": "#2f87cc"
+    },
+    {
+      "source": "收车",
+      "predicate": "由…执行",
+      "target": "仓储方",
+      "edgeId": "e113",
+      "color": "#2f87cc"
+    },
+    {
+      "source": "装车",
+      "predicate": "由…执行",
+      "target": "运输方",
+      "edgeId": "e114",
+      "color": "#2f87cc"
+    },
+    {
+      "source": "运输调度",
+      "predicate": "由…执行",
+      "target": "物流服务商",
+      "edgeId": "e115",
+      "color": "#2f87cc"
+    },
+    {
+      "source": "4.1 下线检查漏检率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e116",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.10 发运及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e117",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.11 备车及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e118",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e119",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.13 装车及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e120",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.14 运输及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e121",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.15 收车及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e122",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.16 运力保障率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e123",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.17 运输监控设备完好率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e124",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.18 返单及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e125",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.2 交付质损率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e126",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.3 运输质损率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e127",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.4 仓储质损率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e128",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.5 运输工具检验不合格率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e129",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.6 仓储设施不合格率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e130",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.7 单车物流质损成本率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e131",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.8 订单及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e132",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.9 调度及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e133",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.1 运输货损率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e134",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.10 运输车辆装载率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e135",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.11 仓储库位摆放准确率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e136",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.12 先进先出执行率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e137",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.2 运输货差率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e138",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.3 设备完好率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e139",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.4 仓储货损率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e140",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.5 仓储货差率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e141",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.6 流通加工合格率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e142",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.7 交付及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e143",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.8 物流停线时间",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e144",
+      "color": "#95d84d"
+    },
+    {
+      "source": "5.9 运输车辆符合率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e145",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.1 入库及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e146",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.2 账实符合率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e147",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.3 保质期件占有率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e148",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.4 售后服务备件包装破损率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e149",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.5 订单满足率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e150",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.6 出库及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e151",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.7 仓库服务交付差错率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e152",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e153",
+      "color": "#95d84d"
+    },
+    {
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "predicate": "统计期间",
+      "target": "考核期",
+      "edgeId": "e154",
+      "color": "#95d84d"
+    },
+    {
+      "source": "4.10 发运及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e155",
+      "color": "#d71165"
+    },
+    {
+      "source": "4.11 备车及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e156",
+      "color": "#d71165"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e157",
+      "color": "#d71165"
+    },
+    {
+      "source": "4.8 订单及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e158",
+      "color": "#d71165"
+    },
+    {
+      "source": "4.9 调度及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e159",
+      "color": "#d71165"
+    },
+    {
+      "source": "5.7 交付及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e160",
+      "color": "#d71165"
+    },
+    {
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e161",
+      "color": "#d71165"
+    },
+    {
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "predicate": "要求",
+      "target": "约定时间",
+      "edgeId": "e162",
+      "color": "#d71165"
+    },
+    {
+      "source": "客户订单",
+      "predicate": "要求",
+      "target": "售后服务备件",
+      "edgeId": "e163",
+      "color": "#d71165"
+    },
+    {
+      "source": "运输订单",
+      "predicate": "触发",
+      "target": "运输调度",
+      "edgeId": "e164",
+      "color": "#58d567"
+    },
+    {
+      "source": "仓储交付",
+      "predicate": "计入",
+      "target": "4.2 交付质损率",
+      "edgeId": "e165",
+      "color": "#4ad3cb"
+    },
+    {
+      "source": "出库",
+      "predicate": "计入",
+      "target": "4.4 仓储质损率",
+      "edgeId": "e166",
+      "color": "#4ad3cb"
+    },
+    {
+      "source": "运输交付",
+      "predicate": "计入",
+      "target": "4.2 交付质损率",
+      "edgeId": "e167",
+      "color": "#4ad3cb"
+    },
+    {
+      "source": "运输方",
+      "predicate": "负责",
+      "target": "到场",
+      "edgeId": "e168",
+      "color": "#be43d4"
+    },
+    {
+      "source": "运输调度",
+      "predicate": "输出",
+      "target": "调度指令",
+      "edgeId": "e169",
+      "color": "#549cd3"
+    },
+    {
+      "source": "返单",
+      "predicate": "返回",
+      "target": "运输单据",
+      "edgeId": "e170",
+      "color": "#da2929"
+    },
+    {
+      "source": "4.1 下线检查漏检率",
+      "predicate": "适用于",
+      "target": "下线检查",
+      "edgeId": "e171",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.1 下线检查漏检率",
+      "predicate": "适用于",
+      "target": "汽车整车",
+      "edgeId": "e172",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.10 发运及时率",
+      "predicate": "适用于",
+      "target": "运输方",
+      "edgeId": "e173",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.11 备车及时率",
+      "predicate": "适用于",
+      "target": "仓储方",
+      "edgeId": "e174",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.12 到场准时率",
+      "predicate": "适用于",
+      "target": "运输方",
+      "edgeId": "e175",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.13 装车及时率",
+      "predicate": "适用于",
+      "target": "运输方",
+      "edgeId": "e176",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.14 运输及时率",
+      "predicate": "适用于",
+      "target": "运输方",
+      "edgeId": "e177",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.15 收车及时率",
+      "predicate": "适用于",
+      "target": "仓储方",
+      "edgeId": "e178",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.16 运力保障率",
+      "predicate": "适用于",
+      "target": "汽车整车",
+      "edgeId": "e179",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.17 运输监控设备完好率",
+      "predicate": "适用于",
+      "target": "车辆运输车",
+      "edgeId": "e180",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.17 运输监控设备完好率",
+      "predicate": "适用于",
+      "target": "运输监控设备",
+      "edgeId": "e181",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.18 返单及时率",
+      "predicate": "适用于",
+      "target": "返单",
+      "edgeId": "e182",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.2 交付质损率",
+      "predicate": "适用于",
+      "target": "汽车整车",
+      "edgeId": "e183",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.3 运输质损率",
+      "predicate": "适用于",
+      "target": "汽车整车",
+      "edgeId": "e184",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.4 仓储质损率",
+      "predicate": "适用于",
+      "target": "汽车整车",
+      "edgeId": "e185",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.5 运输工具检验不合格率",
+      "predicate": "适用于",
+      "target": "运输工具",
+      "edgeId": "e186",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.5 运输工具检验不合格率",
+      "predicate": "适用于",
+      "target": "运输工具检验",
+      "edgeId": "e187",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.6 仓储设施不合格率",
+      "predicate": "适用于",
+      "target": "仓储设施",
+      "edgeId": "e188",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.6 仓储设施不合格率",
+      "predicate": "适用于",
+      "target": "仓储设施检查",
+      "edgeId": "e189",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.7 单车物流质损成本率",
+      "predicate": "适用于",
+      "target": "汽车整车",
+      "edgeId": "e190",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.8 订单及时率",
+      "predicate": "适用于",
+      "target": "物流服务商",
+      "edgeId": "e191",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "4.9 调度及时率",
+      "predicate": "适用于",
+      "target": "物流服务商",
+      "edgeId": "e192",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.1 运输货损率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e193",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.10 运输车辆装载率",
+      "predicate": "适用于",
+      "target": "运输车辆",
+      "edgeId": "e194",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.11 仓储库位摆放准确率",
+      "predicate": "适用于",
+      "target": "库位",
+      "edgeId": "e195",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.11 仓储库位摆放准确率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e196",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.12 先进先出执行率",
+      "predicate": "适用于",
+      "target": "仓库抽检",
+      "edgeId": "e197",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.12 先进先出执行率",
+      "predicate": "适用于",
+      "target": "先进先出",
+      "edgeId": "e198",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.2 运输货差率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e199",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.4 仓储货损率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e200",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.5 仓储货差率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e201",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.6 流通加工合格率",
+      "predicate": "适用于",
+      "target": "流通加工",
+      "edgeId": "e202",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.6 流通加工合格率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e203",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.7 交付及时率",
+      "predicate": "适用于",
+      "target": "交付",
+      "edgeId": "e204",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.7 交付及时率",
+      "predicate": "适用于",
+      "target": "零部件",
+      "edgeId": "e205",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "5.9 运输车辆符合率",
+      "predicate": "适用于",
+      "target": "运输车辆",
+      "edgeId": "e206",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.1 入库及时率",
+      "predicate": "适用于",
+      "target": "入库",
+      "edgeId": "e207",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.1 入库及时率",
+      "predicate": "适用于",
+      "target": "售后服务备件",
+      "edgeId": "e208",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.2 账实符合率",
+      "predicate": "适用于",
+      "target": "售后服务备件",
+      "edgeId": "e209",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.2 账实符合率",
+      "predicate": "适用于",
+      "target": "盘点",
+      "edgeId": "e210",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.3 保质期件占有率",
+      "predicate": "适用于",
+      "target": "售后服务备件",
+      "edgeId": "e211",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.4 售后服务备件包装破损率",
+      "predicate": "适用于",
+      "target": "售后服务备件",
+      "edgeId": "e212",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.5 订单满足率",
+      "predicate": "适用于",
+      "target": "售后服务备件",
+      "edgeId": "e213",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.5 订单满足率",
+      "predicate": "适用于",
+      "target": "客户订单",
+      "edgeId": "e214",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.6 出库及时率",
+      "predicate": "适用于",
+      "target": "出库",
+      "edgeId": "e215",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.6 出库及时率",
+      "predicate": "适用于",
+      "target": "售后服务备件",
+      "edgeId": "e216",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.7 仓库服务交付差错率",
+      "predicate": "适用于",
+      "target": "仓库",
+      "edgeId": "e217",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "predicate": "适用于",
+      "target": "物流服务商",
+      "edgeId": "e218",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.8 售后服务备件紧急订单运输及时率",
+      "predicate": "适用于",
+      "target": "紧急订单",
+      "edgeId": "e219",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "predicate": "适用于",
+      "target": "普通订单",
+      "edgeId": "e220",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "6.9 售后服务备件普通订单运输及时率",
+      "predicate": "适用于",
+      "target": "物流服务商",
+      "edgeId": "e221",
+      "color": "#67a3ed"
+    },
+    {
+      "source": "客户订单",
+      "predicate": "需求",
+      "target": "售后服务备件",
+      "edgeId": "e222",
+      "color": "#ee9e63"
+    },
+    {
+      "source": "交付",
+      "predicate": "面向",
+      "target": "客户",
+      "edgeId": "e223",
+      "color": "#ea70e6"
+    }
+  ]
+}
+    </script>
+    <script>
+        (function () {
+            console.log('[iframe] Script starting - mobile check:', window.innerWidth <= 768);
+            console.log('[iframe] User agent:', navigator.userAgent);
+
+            const dataElement = document.getElementById('viz-data');
+            if (!dataElement) {
+                console.error('[iframe] viz-data element not found!');
+                return;
+            }
+
+            let vizData;
+            try {
+                vizData = JSON.parse(dataElement.textContent);
+                console.log('[iframe] Data parsed successfully:', vizData.nodes?.length, 'nodes');
+            } catch (e) {
+                console.error('[iframe] Failed to parse data:', e);
+                return;
+            }
+
+            const state = {
+                activeElement: null,
+                focusCluster: null,
+                focusPredicate: null,
+                searchTerm: '',
+                sidebarCollapsed: false,
+                sidebarDisabled: false
+            };
+
+            const nodeById = Object.fromEntries(vizData.nodes.map(node => [node.id, node]));
+            const edgeById = Object.fromEntries(vizData.edges.map(edge => [edge.id, edge]));
+            const clusterById = Object.fromEntries(vizData.clusters.map(cluster => [cluster.id, cluster]));
+            const edgesByPredicate = {};
+            vizData.edges.forEach(edge => {
+                if (!edgesByPredicate[edge.predicate]) {
+                    edgesByPredicate[edge.predicate] = [];
+                }
+                edgesByPredicate[edge.predicate].push(edge.id);
+            });
+
+            const nodesByCluster = {};
+            vizData.clusters.forEach(cluster => {
+                cluster.members.forEach(member => {
+                    if (!nodesByCluster[cluster.id]) {
+                        nodesByCluster[cluster.id] = new Set();
+                    }
+                    nodesByCluster[cluster.id].add(member);
+                });
+            });
+
+            function renderStats() {
+                const grid = document.getElementById('statsGrid');
+                const stats = vizData.stats;
+                const entries = [
+                    { label: 'Entities', value: stats.entities },
+                    { label: 'Relations', value: stats.relations },
+                    { label: 'Relation types', value: stats.relationTypes },
+                    { label: 'Entity clusters', value: stats.entityClusters },
+                    { label: 'Edge clusters', value: stats.edgeClusters },
+                    { label: 'Isolated entities', value: stats.isolatedEntities },
+                    { label: 'Components', value: stats.components },
+                    { label: 'Average degree', value: stats.averageDegree }
+                ];
+                grid.innerHTML = entries
+                    .map(entry => `
+                        <div class="stat-card">
+                            <div class="stat-value">${entry.value}</div>
+                            <div>${entry.label}</div>
+                        </div>
+                    `)
+                    .join('');
+            }
+
+            function renderTopLists() {
+                const topEntitiesContainer = document.getElementById('topEntities');
+                const topRelationsContainer = document.getElementById('topRelations');
+
+                const entityItems = vizData.topEntities.map(item => {
+                    const clusterLabel = item.cluster ? `${item.cluster}` : 'Unclustered';
+                    return `
+                        <div class="list-item">
+                            <div>
+                                <strong>${item.label}</strong>
+                                <div class="meta">Cluster: ${clusterLabel}</div>
+                            </div>
+                            <div>${item.degree}</div>
+                        </div>
+                    `;
+                });
+                topEntitiesContainer.innerHTML = entityItems.join('') || '<div class="meta">No entities</div>';
+
+                const relationItems = vizData.topRelations.map(item => `
+                    <div class="list-item relation-item" data-predicate="${item.predicate}">
+                        <div>
+                            <strong>${item.predicate}</strong>
+                            <div class="meta">${item.count} relations</div>
+                        </div>
+                        <div class="pill" style="background: ${item.color}1a; border: 1px solid ${item.color};">${item.count}</div>
+                    </div>
+                `);
+                topRelationsContainer.innerHTML = relationItems.join('') || '<div class="meta">No relations</div>';
+            }
+
+            function renderClusters() {
+                const container = document.getElementById('clusterList');
+                if (!vizData.clusters.length) {
+                    container.innerHTML = '<div class="meta">No cluster information provided.</div>';
+                    return;
+                }
+                container.innerHTML = vizData.clusters
+                    .map(cluster => `
+                        <button class="list-item cluster-item" data-cluster="${cluster.id}" style="border-left-color: ${cluster.color};">
+                            <div>
+                                <strong>${cluster.label}</strong>
+                                <div class="meta">${cluster.size} members</div>
+                            </div>
+                            <span class="legend-swatch" style="background: ${cluster.color};"></span>
+                        </button>
+                    `)
+                    .join('');
+            }
+
+            // function renderRelationsTable() {
+            //     const tbody = document.getElementById('relationsTable');
+            //     tbody.innerHTML = vizData.relations
+            //         .map(rel => `
+            //             <tr data-edge="${rel.edgeId}">
+            //                 <td>${rel.source}</td>
+            //                 <td><span class="pill" style="border: 1px solid ${rel.color}; background: ${rel.color}1a;">${rel.predicate}</span></td>
+            //                 <td>${rel.target}</td>
+            //             </tr>
+            //         `)
+            //         .join('');
+            // }
+
+            // function renderInsights() {
+            //     const insights = document.getElementById('insightsContent');
+            //     const clusters = vizData.clusters
+            //         .map(cluster => `
+            //             <div class="list-item" style="border-left: 4px solid ${cluster.color};">
+            //                 <div>
+            //                     <strong>${cluster.label}</strong>
+            //                     <div class="meta">Members: ${cluster.members.join(', ')}</div>
+            //                 </div>
+            //                 <div>${cluster.size}</div>
+            //             </div>
+            //         `)
+            //         .join('');
+
+            //     const components = vizData.components
+            //         .map((component, index) => `
+            //             <div class="list-item">
+            //                 <div>
+            //                     <strong>Component ${index + 1}</strong>
+            //                     <div class="meta">${component.members.join(', ')}</div>
+            //                 </div>
+            //                 <div>${component.size}</div>
+            //             </div>
+            //         `)
+            //         .join('');
+
+            //     const isolates = vizData.isolatedEntities.length
+            //         ? vizData.isolatedEntities.join(', ')
+            //         : 'None';
+
+            //     insights.innerHTML = `
+            //         <div class="section">
+            //             <h2>Clusters</h2>
+            //             <div class="list">${clusters || '<div class="meta">No clusters</div>'}</div>
+            //         </div>
+            //         <div class="section">
+            //             <h2>Connected components</h2>
+            //             <div class="list">${components || '<div class="meta">Single connected component</div>'}</div>
+            //         </div>
+            //         <div class="section">
+            //             <h2>Isolated entities</h2>
+            //             <div class="meta">${isolates}</div>
+            //         </div>
+            //     `;
+            // }
+
+            function setActiveElement(element) {
+                state.activeElement = element;
+                renderSelectionDetails();
+                updateHighlights();
+
+                // Notify parent about selection change
+                if (window.parent !== window && state.sidebarDisabled) {
+                    const selection = element ? {
+                        type: element.type,
+                        id: element.id,
+                        ...getElementDetails(element)
+                    } : null;
+                    window.parent.postMessage({
+                        type: 'selectionChanged',
+                        selection: selection
+                    }, '*');
+                }
+            }
+
+            function getElementDetails(element) {
+                if (!element) return {};
+
+                if (element.type === 'node') {
+                    const node = nodeById[element.id];
+                    return {
+                        label: node.label,
+                        cluster: node.cluster,
+                        degree: node.degree,
+                        indegree: node.indegree,
+                        outdegree: node.outdegree,
+                        neighbors: node.neighbors
+                    };
+                } else if (element.type === 'edge') {
+                    const edge = edgeById[element.id];
+                    return {
+                        source: edge.source,
+                        target: edge.target,
+                        predicate: edge.predicate,
+                        cluster: edge.cluster
+                    };
+                }
+                return {};
+            }
+
+            function clearActiveElement() {
+                state.activeElement = null;
+                renderSelectionDetails();
+                updateHighlights();
+            }
+
+            function renderSelectionDetails() {
+                const panel = document.getElementById('selectionDetails');
+                const active = state.activeElement;
+                if (!active) {
+                    panel.innerHTML = 'Click a node or relation in the network to inspect details.';
+                    return;
+                }
+
+                if (active.type === 'node') {
+                    const node = nodeById[active.id];
+                    const cluster = node.cluster ? `Cluster: ${node.cluster}` : 'Unclustered';
+                    const neighbors = node.neighbors.length ? node.neighbors.join(', ') : 'None';
+                    panel.innerHTML = `
+                        <h3>${node.label}</h3>
+                        <ul>
+                            <li>${cluster}</li>
+                            <li>Total degree: ${node.degree}</li>
+                            <li>Outgoing: ${node.outdegree}</li>
+                            <li>Incoming: ${node.indegree}</li>
+                            <li>Neighbors: ${neighbors}</li>
+                        </ul>
+                    `;
+                } else if (active.type === 'edge') {
+                    const edge = edgeById[active.id];
+                    const cluster = edge.cluster ? `Cluster: ${edge.cluster}` : 'Unclustered';
+                    panel.innerHTML = `
+                        <h3>${edge.source} → ${edge.target}</h3>
+                        <ul>
+                            <li>Relation: ${edge.predicate}</li>
+                            <li>${cluster}</li>
+                        </ul>
+                    `;
+                }
+            }
+
+            function toggleClusterFocus(clusterId) {
+                if (state.focusCluster === clusterId) {
+                    state.focusCluster = null;
+                } else {
+                    state.focusCluster = clusterId;
+                }
+                updateActiveButtons();
+                updateHighlights();
+            }
+
+            function togglePredicateFocus(predicate) {
+                if (state.focusPredicate === predicate) {
+                    state.focusPredicate = null;
+                } else {
+                    state.focusPredicate = predicate;
+                }
+                updateActiveButtons();
+                updateHighlights();
+            }
+
+            function toggleEntityFocus(id) {
+                if (state.activeElement?.id === id) {
+                    setActiveElement(null);
+                } else {
+                    setActiveElement({ type: 'node', id: id });
+                }
+            }
+
+            function updateActiveButtons() {
+                document.querySelectorAll('.cluster-item').forEach(item => {
+                    const clusterId = item.getAttribute('data-cluster');
+                    item.classList.toggle('active', state.focusCluster === clusterId);
+                });
+                document.querySelectorAll('.relation-item').forEach(item => {
+                    const predicate = item.getAttribute('data-predicate');
+                    item.classList.toggle('active', state.focusPredicate === predicate);
+                });
+            }
+
+            // Canvas-based network visualization
+            let canvas, ctx, transform, simulation;
+            let nodes, edges;
+            let highlightedNodes = new Set();
+            let highlightedEdges = new Set();
+            let isFiltering = false;
+
+            function createNetwork() {
+                console.log('[iframe] createNetwork starting...');
+
+                if (typeof d3 === 'undefined') {
+                    console.error('[iframe] D3.js not loaded!');
+                    return;
+                }
+                console.log('[iframe] D3.js version:', d3.version);
+
+                canvas = document.getElementById('networkCanvas');
+                if (!canvas) {
+                    console.error('[iframe] Canvas element not found!');
+                    return;
+                }
+
+                ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.error('[iframe] Canvas context not available!');
+                    return;
+                }
+
+                // Force a layout recalculation to ensure proper sizing
+                canvas.offsetHeight; // Trigger reflow
+
+                // Set canvas size with device pixel ratio for crisp rendering
+                const rect = canvas.getBoundingClientRect();
+                console.log('[iframe] Canvas rect:', rect.width, 'x', rect.height);
+
+                // Ensure minimum size for mobile/narrow viewports
+                const width = Math.max(rect.width, 320);
+                const height = Math.max(rect.height, 200);
+
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+
+                // Initialize transform for zooming/panning
+                transform = d3.zoomIdentity;
+
+                // Clone data for simulation
+                nodes = vizData.nodes.map(node => ({ ...node }));
+                edges = vizData.edges.map(edge => ({ ...edge }));
+
+                // Mouse interaction handling
+                let draggedNode = null;
+                let isDraggingNode = false;
+                let mouseX, mouseY;
+                let mouseDownPos = null;
+                let isMouseDown = false;
+                const DRAG_THRESHOLD = 10; // pixels - minimum movement to start dragging
+
+                // Create D3 force simulation
+                simulation = d3
+                    .forceSimulation(nodes)
+                    .force('link', d3.forceLink(edges).id(d => d.id).distance(120).strength(0.3))
+                    .force('charge', d3.forceManyBody().strength(-280))
+                    .force('center', d3.forceCenter(width / 2, height / 2))
+                    .force('collision', d3.forceCollide().radius(d => d.radius + 12));
+
+                // Set up zoom behavior with conditional activation
+                const zoom = d3.zoom()
+                    .scaleExtent([0.25, 3])
+                    .on('zoom', (event) => {
+                        // Apply zoom only if not dragging a node
+                        if (!isDraggingNode) {
+                            transform = event.transform;
+                            render();
+                        }
+                    })
+                    .filter((event) => {
+                        // Allow zoom with mouse wheel or when no node under cursor
+                        if (event.type === 'wheel') return true;
+                        if (event.type === 'mousedown' && event.button === 0) {
+                            const pos = getMousePos(event);
+                            const node = findNode(pos.x, pos.y);
+                            return !node;
+                        }
+                        return true;
+                    });
+
+                d3.select(canvas).call(zoom);
+
+                // Set initial zoom level
+                zoom.scaleTo(d3.select(canvas), 0.5);
+
+                function getMousePos(event) {
+                    const rect = canvas.getBoundingClientRect();
+                    return {
+                        x: (event.clientX - rect.left - transform.x) / transform.k,
+                        y: (event.clientY - rect.top - transform.y) / transform.k
+                    };
+                }
+
+                function findNode(x, y) {
+                    for (let i = nodes.length - 1; i >= 0; i--) {
+                        const node = nodes[i];
+                        const dx = x - node.x;
+                        const dy = y - node.y;
+                        if (dx * dx + dy * dy < node.radius * node.radius) {
+                            return node;
+                        }
+                    }
+                    return null;
+                }
+
+                function findEdge(x, y) {
+                    for (let i = edges.length - 1; i >= 0; i--) {
+                        const edge = edges[i];
+                        if (!edge.source || !edge.target) continue;
+
+                        // Check if click is near the edge line
+                        const dx = edge.target.x - edge.source.x;
+                        const dy = edge.target.y - edge.source.y;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        if (length === 0) continue;
+
+                        const dot = ((x - edge.source.x) * dx + (y - edge.source.y) * dy) / (length * length);
+                        if (dot < 0 || dot > 1) continue;
+
+                        const projX = edge.source.x + dot * dx;
+                        const projY = edge.source.y + dot * dy;
+                        const distSq = (x - projX) * (x - projX) + (y - projY) * (y - projY);
+
+                        if (distSq < 25) { // 5px threshold
+                            return edge;
+                        }
+                    }
+                    return null;
+                }
+
+                // Prevent context menu on right click
+                canvas.addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                    return false;
+                });
+
+                canvas.addEventListener('mousedown', (event) => {
+                    // Allow event only for primary button (left click)
+                    if (event.button !== 0) return;
+
+                    const pos = getMousePos(event);
+                    mouseX = pos.x;
+                    mouseY = pos.y;
+                    mouseDownPos = { x: pos.x, y: pos.y };
+                    isMouseDown = true;
+                    draggedNode = findNode(pos.x, pos.y);
+
+                    if (draggedNode) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        // Don't start dragging immediately - wait for movement
+                        canvas.style.cursor = 'grabbing';
+                    }
+                });
+
+                canvas.addEventListener('mousemove', (event) => {
+                    // Allow event only for primary button (left click)
+                    if (event.button !== 0) return;
+                    const pos = getMousePos(event);
+
+                    if (draggedNode && isDraggingNode) {
+                        // Already dragging - continue moving the node
+                        draggedNode.fx = pos.x;
+                        draggedNode.fy = pos.y;
+                    } else if (draggedNode && isMouseDown && mouseDownPos) {
+                        // Check if mouse moved enough to start dragging
+                        const dx = pos.x - mouseDownPos.x;
+                        const dy = pos.y - mouseDownPos.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance > DRAG_THRESHOLD) {
+                            // Start dragging
+                            isDraggingNode = true;
+                            simulation.alphaTarget(0.1).restart();
+                            draggedNode.fx = draggedNode.x;
+                            draggedNode.fy = draggedNode.y;
+                        }
+                    } else if (!isDraggingNode && !isMouseDown) {
+                        // Update cursor based on what's under mouse
+                        const node = findNode(pos.x, pos.y);
+                        const edge = findEdge(pos.x, pos.y);
+                        canvas.style.cursor = (node || edge) ? 'pointer' : 'grab';
+                    }
+                });
+
+                canvas.addEventListener('mouseup', (event) => {
+                    // Allow event only for primary button (left click)
+                    if (event.button !== 0) return;
+
+                    if (draggedNode) {
+                        if (isDraggingNode) {
+                            // Was actually dragging - stop the drag
+                            simulation.alphaTarget(0);
+                            draggedNode.fx = null;
+                            draggedNode.fy = null;
+                        }
+                        // Reset node reference
+                        draggedNode = null;
+                        canvas.style.cursor = 'grab';
+                    }
+
+                    // Reset all mouse states
+                    isMouseDown = false;
+                    isDraggingNode = false;
+                    mouseDownPos = null;
+                });
+
+                canvas.addEventListener('click', (event) => {
+                    // Only handle click if we weren't dragging
+                    if (isDraggingNode) return;
+
+                    const pos = getMousePos(event);
+                    const node = findNode(pos.x, pos.y);
+                    const edge = findEdge(pos.x, pos.y);
+
+                    if (node) {
+                        setActiveElement({ type: 'node', id: node.id });
+                    } else if (edge) {
+                        setActiveElement({ type: 'edge', id: edge.id });
+                    } else {
+                        clearActiveElement();
+                    }
+                });
+
+                // Animation loop
+                simulation.on('tick', () => {
+                    // Avoid nodes to be re-rendered all time, just re-render when moving
+                    if (isDraggingNode) {
+                        render();
+                    }
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', resizeCanvas);
+
+                render();
+            }
+
+            function resizeCanvas() {
+                if (!canvas || !ctx) return;
+
+                // Force canvas to take full container size
+                if (state.sidebarDisabled) {
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                }
+
+                const rect = canvas.getBoundingClientRect();
+                console.log('Canvas resize - rect:', rect.width, 'x', rect.height);
+
+                // Ensure minimum size for mobile
+                const width = Math.max(rect.width, 320);
+                const height = Math.max(rect.height, 200);
+
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+
+                // Update simulation center
+                if (simulation) {
+                    simulation.force('center', d3.forceCenter(width / 2, height / 2));
+                    simulation.alpha(0.3).restart();
+                }
+
+                render();
+            }
+
+
+            function render() {
+                if (!ctx || !canvas) return;
+
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1),
+                    canvas.height / (window.devicePixelRatio || 1));
+
+                // Apply transform
+                ctx.save();
+                ctx.translate(transform.x, transform.y);
+                ctx.scale(transform.k, transform.k);
+
+                // Set text properties
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '12px Inter, system-ui, sans-serif';
+
+                // Draw edges first
+                edges.forEach(edge => {
+                    if (!edge.source || !edge.target) return;
+
+                    const isHighlighted = highlightedEdges.has(edge.id);
+                    const isDimmed = isFiltering && !isHighlighted;
+
+                    // Calculate edge endpoints accounting for node radius
+                    const dx = edge.target.x - edge.source.x;
+                    const dy = edge.target.y - edge.source.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const normX = dx / distance;
+                    const normY = dy / distance;
+
+                    const sourcePadding = edge.source.radius + 2;
+                    const targetPadding = edge.target.radius + 8;
+                    const sourceX = edge.source.x + normX * sourcePadding;
+                    const sourceY = edge.source.y + normY * sourcePadding;
+                    const targetX = edge.target.x - normX * targetPadding;
+                    const targetY = edge.target.y - normY * targetPadding;
+
+                    // Draw edge line
+                    ctx.strokeStyle = edge.color;
+                    ctx.globalAlpha = isDimmed ? 0.15 : (isHighlighted ? 1.0 : 0.55);
+                    ctx.lineWidth = 1.4;
+                    ctx.beginPath();
+                    ctx.moveTo(sourceX, sourceY);
+                    ctx.lineTo(targetX, targetY);
+                    ctx.stroke();
+
+                    // Draw arrowhead
+                    const arrowLength = 12;
+                    const arrowWidth = 24;
+                    const angle = Math.atan2(dy, dx);
+
+                    ctx.fillStyle = edge.color;
+                    ctx.beginPath();
+                    ctx.moveTo(targetX, targetY);
+                    ctx.lineTo(
+                        targetX - arrowLength * Math.cos(angle - arrowWidth * Math.PI / 180),
+                        targetY - arrowLength * Math.sin(angle - arrowWidth * Math.PI / 180)
+                    );
+                    ctx.lineTo(
+                        targetX - arrowLength * Math.cos(angle + arrowWidth * Math.PI / 180),
+                        targetY - arrowLength * Math.sin(angle + arrowWidth * Math.PI / 180)
+                    );
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Draw edge label if zoom level is appropriate
+                    if (transform.k > 0.8) {
+                        const labelX = (sourceX + targetX) / 2;
+                        const labelY = (sourceY + targetY) / 2;
+
+                        ctx.fillStyle = isDimmed ? 'rgba(30, 41, 59, 0.15)' : 'rgba(30, 41, 59, 0.8)';
+                        ctx.font = '10px Inter, system-ui, sans-serif';
+                        ctx.fillText(edge.predicate, labelX, labelY);
+                    }
+                });
+
+                // Draw nodes
+                nodes.forEach(node => {
+                    const isHighlighted = highlightedNodes.has(node.id);
+                    const isDimmed = isFiltering && !isHighlighted;
+
+                    // Draw node circle
+                    ctx.fillStyle = node.color;
+                    ctx.globalAlpha = isDimmed ? 0.15 : 1.0;
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.radius, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // Draw node border
+                    ctx.strokeStyle = '#0f172a';
+                    ctx.lineWidth = isHighlighted ? 2.4 : 1.2;
+                    ctx.stroke();
+
+                    // Draw node label
+                    if (transform.k > 0.5) {
+                        ctx.fillStyle = isDimmed ? 'rgba(15, 23, 42, 0.15)' : '#0f172a';
+                        ctx.font = '12px Inter, system-ui, sans-serif';
+                        ctx.fillText(node.label, node.x, node.y + node.radius + 14);
+                    }
+                });
+
+                ctx.restore();
+                ctx.globalAlpha = 1.0;
+            }
+
+            function updateHighlights() {
+                // Clear previous highlights
+                highlightedNodes.clear();
+                highlightedEdges.clear();
+                isFiltering = false;
+
+                const addNode = id => {
+                    if (id) {
+                        highlightedNodes.add(id);
+                    }
+                };
+                const addEdge = id => {
+                    if (id) {
+                        highlightedEdges.add(id);
+                    }
+                };
+
+                if (state.activeElement) {
+                    isFiltering = true;
+                    if (state.activeElement.type === 'node') {
+                        const node = nodeById[state.activeElement.id];
+                        addNode(node.id);
+                        node.neighbors.forEach(addNode);
+                        (node.edgeIds.outgoing || []).forEach(addEdge);
+                        (node.edgeIds.incoming || []).forEach(addEdge);
+                    } else if (state.activeElement.type === 'edge') {
+                        const edge = edgeById[state.activeElement.id];
+                        addEdge(edge.id);
+                        addNode(edge.source);
+                        addNode(edge.target);
+                    }
+                }
+
+                if (state.focusCluster && nodesByCluster[state.focusCluster]) {
+                    isFiltering = true;
+                    nodesByCluster[state.focusCluster].forEach(addNode);
+                    vizData.edges.forEach(edge => {
+                        if (
+                            nodesByCluster[state.focusCluster].has(edge.source) &&
+                            nodesByCluster[state.focusCluster].has(edge.target)
+                        ) {
+                            addEdge(edge.id);
+                        }
+                    });
+                }
+
+                if (state.focusPredicate && edgesByPredicate[state.focusPredicate]) {
+                    isFiltering = true;
+                    edgesByPredicate[state.focusPredicate].forEach(edgeId => {
+                        addEdge(edgeId);
+                        const edge = edgeById[edgeId];
+                        addNode(edge.source);
+                        addNode(edge.target);
+                    });
+                }
+
+                if (state.searchTerm) {
+                    const term = state.searchTerm.toLowerCase();
+                    isFiltering = true;
+                    vizData.nodes.forEach(node => {
+                        if (node.label.toLowerCase().includes(term)) {
+                            addNode(node.id);
+                            node.neighbors.forEach(addNode);
+                        }
+                    });
+                    vizData.edges.forEach(edge => {
+                        if (edge.predicate.toLowerCase().includes(term)) {
+                            addEdge(edge.id);
+                            addNode(edge.source);
+                            addNode(edge.target);
+                        }
+                    });
+                }
+
+                // Trigger re-render with updated highlights
+                render();
+            }
+
+            function toggleSidebar() {
+                if (state.sidebarDisabled) return;
+
+                state.sidebarCollapsed = !state.sidebarCollapsed;
+                const layout = document.querySelector('.layout');
+                const sidebar = document.querySelector('.sidebar');
+                const toggleButton = document.getElementById('sidebarToggle');
+
+                layout.classList.toggle('sidebar-collapsed', state.sidebarCollapsed);
+                sidebar.classList.toggle('collapsed', state.sidebarCollapsed);
+                toggleButton.classList.toggle('collapsed', state.sidebarCollapsed);
+
+                // Trigger canvas resize when sidebar toggles
+                setTimeout(() => {
+                    resizeCanvas();
+                }, 300); // Wait for transition to complete
+            }
+
+            function disableSidebar() {
+                state.sidebarDisabled = true;
+
+                const layout = document.querySelector('.layout');
+                const sidebar = document.querySelector('.sidebar');
+                const toggleButton = document.getElementById('sidebarToggle');
+                const main = document.querySelector('.main');
+                const tabPanel = document.querySelector('.tab-panel');
+                const networkPanel = document.querySelector('.network-panel');
+
+                layout.classList.add('sidebar-disabled');
+                sidebar.style.display = 'none';
+                toggleButton.style.display = 'none';
+
+                // Force styles directly for iframe context
+                main.style.width = '100%';
+                main.style.height = '100vh';
+                tabPanel.style.padding = '0';
+                tabPanel.style.width = '100%';
+                tabPanel.style.height = '100vh';
+                networkPanel.style.width = '100%';
+                networkPanel.style.height = '100vh';
+                networkPanel.style.borderRadius = '0';
+                networkPanel.style.border = 'none';
+
+                console.log('Sidebar disabled, forcing full width styles');
+
+                // Multiple resize attempts with forced reflow
+                setTimeout(() => {
+                    canvas.offsetHeight; // Trigger reflow
+                    console.log('First resize attempt after 200ms');
+                    resizeCanvas();
+                }, 200);
+
+                setTimeout(() => {
+                    canvas.offsetHeight; // Trigger reflow
+                    console.log('Second resize attempt after 500ms');
+                    resizeCanvas();
+                }, 500);
+
+                setTimeout(() => {
+                    canvas.offsetHeight; // Trigger reflow
+                    console.log('Final resize attempt after 800ms');
+                    resizeCanvas();
+                }, 800);
+
+                // Notify parent about graph data
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'graphDataReady',
+                        data: vizData
+                    }, '*');
+                }
+            }
+
+            function bindInteractions() {
+                document.querySelectorAll('.cluster-item').forEach(item => {
+                    item.addEventListener('click', () => toggleClusterFocus(item.getAttribute('data-cluster')));
+                });
+
+                document.querySelectorAll('.relation-item').forEach(item => {
+                    item.addEventListener('click', () => togglePredicateFocus(item.getAttribute('data-predicate')));
+                });
+
+                // document.getElementById('relationsTable').addEventListener('click', event => {
+                //     const row = event.target.closest('tr');
+                //     if (!row) {
+                //         return;
+                //     }
+                //     const edgeId = row.getAttribute('data-edge');
+                //     if (edgeId) {
+                //         setActiveElement({ type: 'edge', id: edgeId });
+                //     }
+                // });
+
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', () => {
+                    state.searchTerm = searchInput.value.trim();
+                    updateHighlights();
+
+                    // Notify parent about search change
+                    if (window.parent !== window && state.sidebarDisabled) {
+                        window.parent.postMessage({
+                            type: 'searchChanged',
+                            searchTerm: state.searchTerm
+                        }, '*');
+                    }
+                });
+                searchInput.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') {
+                        searchInput.value = '';
+                        state.searchTerm = '';
+                        updateHighlights();
+                    }
+                });
+
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', event => {
+                        const target = event.currentTarget;
+                        document.querySelectorAll('.tab').forEach(button => button.classList.remove('active'));
+                        target.classList.add('active');
+                        const tabId = target.getAttribute('data-tab');
+                        document.querySelectorAll('.tab-panel').forEach(panel => {
+                            panel.classList.toggle('active', panel.id === tabId);
+                        });
+                    });
+                });
+
+                document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+
+                // Listen for messages from parent
+                window.addEventListener('message', (event) => {
+                    if (event.data.type === 'disableInternalSidebar') {
+                        disableSidebar();
+                    } else if (event.data.type === 'search') {
+                        state.searchTerm = event.data.term || '';
+                        updateHighlights();
+                    } else if (event.data.type === 'focusCluster') {
+                        toggleClusterFocus(event.data.clusterId);
+                    } else if (event.data.type === 'focusPredicate') {
+                        togglePredicateFocus(event.data.predicate);
+                    } else if (event.data.type === 'focusEntity') {
+                        toggleEntityFocus(event.data.id);
+                    }
+                });
+
+            }
+
+            renderStats();
+            renderTopLists();
+            renderClusters();
+            // renderRelationsTable();
+            // renderInsights();
+
+            // Delay network creation to ensure proper layout
+            setTimeout(() => {
+                createNetwork();
+                bindInteractions();
+            }, 100);
+        })();
+    </script>
+</body>
+
+</html>

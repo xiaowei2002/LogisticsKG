@@ -1,10 +1,10 @@
 """基于 LLM 的知识图谱去重。"""
-import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from dotenv import load_dotenv
+from loguru import logger
 
 import dspy
 import numpy as np
@@ -15,8 +15,6 @@ from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
 
 from src.models import Graph
-
-logger = logging.getLogger(__name__)
 
 
 def _dict_clusters_to_lists(clusters) -> list[list[str]]:
@@ -137,7 +135,7 @@ class LLMDeduplicate:
             # 若有未分配项，将其作为独立簇加入
             if len(unassigned) > 0:
                 logger.debug(
-                    "Adding %s unassigned items as a separate cluster", len(unassigned)
+                    "Adding {} unassigned items as a separate cluster", len(unassigned)
                 )
                 clusters.append(unassigned.tolist())
             else:
@@ -151,8 +149,8 @@ class LLMDeduplicate:
             else:
                 self.edge_clusters = clusters_data
 
-            logger.debug("Number of %s clusters: %s", embedding_type, len(clusters))
-            logger.debug("Distribution of cluster sizes: %s...", [len(c) for c in clusters[:5]])
+            logger.debug("Number of {} clusters: {}", embedding_type, len(clusters))
+            logger.debug("Distribution of cluster sizes: {}...", [len(c) for c in clusters[:5]])
 
     def deduplicate_cluster(
         self, cluster: list[str], item_type: str = "node"
@@ -165,7 +163,7 @@ class LLMDeduplicate:
         singular_type = "entity" if item_type == "node" else "edge"
 
         logger.info(
-            "Starting deduplication of %s %s in cluster", len(cluster), plural_type
+            "Starting deduplication of {} {} in cluster", len(cluster), plural_type
         )
 
         processed_count = 0
@@ -174,7 +172,7 @@ class LLMDeduplicate:
             item = cluster.pop()
 
             logger.debug(
-                "[%s/%s] Processing %s: '%s'",
+                "[{}/{}] Processing {}: '{}'",
                 processed_count,
                 len(cluster),
                 singular_type,
@@ -205,7 +203,7 @@ class LLMDeduplicate:
 
             if len(duplicates) > 0:
                 logger.info(
-                    "  → Using alias '%s' to represent: '%s' and %s",
+                    "  → Using alias '{}' to represent: '{}' and {}",
                     result.alias,
                     item,
                     duplicates,
@@ -216,12 +214,12 @@ class LLMDeduplicate:
                     item_clusters[result.alias].add(duplicate)
             else:
                 logger.debug(
-                    "  ✗ No duplicates found for '%s', keeping as is", item
+                    "  ✗ No duplicates found for '{}', keeping as is", item
                 )
                 item_clusters[item] = {item}
 
         logger.debug(
-            "Deduplication complete: %s unique %s from original %s",
+            "Deduplication complete: {} unique {} from original {}",
             len(items),
             plural_type,
             processed_count,
@@ -256,7 +254,7 @@ class LLMDeduplicate:
                 entities.update(cluster_entities)
                 entity_clusters.update(cluster_entity_map)
             except Exception as e:
-                logger.error("Error processing node cluster %s: %s", i, e)
+                logger.error("Error processing node cluster {}: {}", i, e)
 
         for i, future in enumerate(edge_futures):
             try:
@@ -264,10 +262,10 @@ class LLMDeduplicate:
                 edges.update(cluster_edges)
                 edge_clusters.update(cluster_edge_map)
             except Exception as e:
-                logger.error("Error processing edge cluster %s: %s", i, e)
+                logger.error("Error processing edge cluster {}: {}", i, e)
 
         logger.info(
-            "Finished processing all clusters with %s nodes and %s edges LLM calls",
+            "Finished processing all clusters with {} nodes and {} edges LLM calls",
             cnt_nodes,
             cnt_edges,
         )

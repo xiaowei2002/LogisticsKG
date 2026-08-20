@@ -1,15 +1,36 @@
 """基于语义哈希的知识图谱去重。"""
+import os
 import unicodedata
+from pathlib import Path
+
 import inflect
 from semhash import SemHash
+from sentence_transformers import SentenceTransformer
+
 from src.models import Graph
+
+DEFAULT_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B"
+
+
+def get_default_embedding_model(
+    model_name: str = DEFAULT_EMBEDDING_MODEL,
+) -> SentenceTransformer:
+    """加载中文嵌入模型，模型缓存到 src/pretrain。"""
+    pretrain_dir = Path(__file__).resolve().parent.parent / "pretrain"
+    pretrain_dir.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("HF_HOME", str(pretrain_dir))
+    os.environ.setdefault("SENTENCE_TRANSFORMERS_HOME", str(pretrain_dir))
+    return SentenceTransformer(model_name)
 
 
 class DeduplicateList:
     """对字符串列表进行语义去重。去重前先NFKC规范化与单数化。"""
 
-    def __init__(self, threshold: float = 0.95):
+    def __init__(
+        self, threshold: float = 0.95, model: SentenceTransformer | None = None
+    ):
         self.threshold = threshold
+        self.model = model
         self.inflect_engine = inflect.engine()
         self.original_map: dict[str, str] = {}
         self.items_map: dict[str, str] = {}
@@ -55,7 +76,7 @@ class DeduplicateList:
             normalized_items.add(singular)
 
         # 对规范化后的字符串去重
-        semhash = SemHash.from_records(records=list(normalized_items))
+        semhash = SemHash.from_records(records=list(normalized_items), model=self.model)
         deduplication_result = semhash.self_deduplicate(threshold=self.threshold)
 
         self.deduplicated_items = len(deduplication_result.selected)
@@ -87,12 +108,16 @@ class DeduplicateList:
 def run_semhash_deduplication(
     graph: Graph,
     similarity_threshold: float = 0.95,
+    retrieval_model: SentenceTransformer | None = None,
 ) -> Graph:
     """对图谱进行去重。"""
+    if retrieval_model is None:
+        retrieval_model = get_default_embedding_model()
+
     # 对图谱各组成部分分别去重
-    entities_dedup = DeduplicateList(similarity_threshold)
+    entities_dedup = DeduplicateList(similarity_threshold, model=retrieval_model)
     entities_dedup.deduplicate(list(graph.entities))
-    edges_dedup = DeduplicateList(similarity_threshold)
+    edges_dedup = DeduplicateList(similarity_threshold, model=retrieval_model)
     edges_dedup.deduplicate(list(graph.edges))
 
     def _canonical_entity(name: str) -> str:
