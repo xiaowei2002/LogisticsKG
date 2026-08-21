@@ -1,0 +1,41 @@
+llm:
+  ollama:
+    model: qwen3:1.7b
+    api_key: ollama
+    base_url: http://localhost:11434/v1
+    temperature: 0.7
+
+
+rag:
+  enabled: true
+  docs_dir: ../pdfs
+  chunk_size: 800                        # 分块最大字符数
+  chunk_overlap: 120                     # 相邻块重叠字符数
+  top_k: 4                               # 每次检索返回的片段数
+  bm25_weight: 0.3                       # 混合检索中 BM25 分数权重（0~1，其余为语义分数）
+  embedding:
+    model: Qwen/Qwen3-Embedding-0.6B     # sentence-transformers 模型（本地缓存于 src/pretrain）
+    device: cpu                          # cpu | cuda
+    batch_size: 16                       # 编码批大小（内存紧张时调小）
+    dtype: fp16                          # fp16 内存减半 | fp32 精度略高
+  index_dir: ../output/.rag_index        # 切块 + 向量缓存目录（首次构建后可秒级加载）
+
+
+graphrag:
+  enabled: true
+  graph_path: ../output/merged_graph.json
+  entity_top_k: 8                          # 实体链接候选实体数
+  context_depth: 2                         # 子图扩展跳数
+  max_triples: 40                          # 注入 prompt 的最大三元组数
+  embedding:                               # 实体链接嵌入模型（缺省复用 rag.embedding）
+    model: Qwen/Qwen3-Embedding-0.6B
+    device: cpu
+    batch_size: 16
+    dtype: fp16
+  index_dir: ../output/.graphrag_index     # 实体向量缓存目录
+
+
+app:
+  host: 127.0.0.1
+  port: 7860
+  default_mode: hybrid
