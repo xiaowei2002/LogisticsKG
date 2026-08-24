@@ -1,10 +1,9 @@
-"""文档加载与切块：PDF → langchain Document 列表。
-
+"""
+文档加载与切块：
+PDF → langchain Document 列表。
 - load_pdfs: 用 pymupdf 逐页抽取文本，每页生成一个 Document（带 source/page 元数据）
 - split_documents: 按句子边界分块，支持块间重叠（无需 langchain-text-splitters 依赖）
 """
-from __future__ import annotations
-
 import re
 from pathlib import Path
 from typing import Iterable, List

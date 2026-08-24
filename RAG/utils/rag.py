@@ -1,11 +1,5 @@
 """RAG 引擎：基于 langchain 的文档检索增强问答。
-
-流程：PDF 语料 → 句子切块 → 本地嵌入 → 混合检索（语义 + BM25）
-      → LCEL 链（prompt | chat_model | StrOutputParser）流式回答。
-索引（切块 + 向量）落盘到 index_dir，二次启动秒级加载。
 """
-from __future__ import annotations
-
 import json
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple

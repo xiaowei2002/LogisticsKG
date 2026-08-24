@@ -1,10 +1,5 @@
 """langchain Embeddings 封装：本地 Qwen3-Embedding-0.6B（sentence-transformers）。
-
-模型缓存到 src/pretrain，离线可用；通过 functools.lru_cache 全局共享，
-RAG 与 GraphRAG 复用同一份嵌入模型，避免重复加载。
 """
-from __future__ import annotations
-
 import functools
 import os
 from pathlib import Path
@@ -13,7 +8,6 @@ from typing import Any, Dict, List
 from langchain_core.embeddings import Embeddings
 from sentence_transformers import SentenceTransformer
 
-# sentence-transformers / HF 缓存目录（与 src 管线共用，离线加载）
 _PRETRAIN_DIR = Path(__file__).resolve().parent.parent.parent / "src" / "pretrain"
 
 

@@ -1,12 +1,4 @@
-"""langchain BaseChatModel 封装：复用 RAG/utils/llm.py 的 OpenAI 兼容客户端。
-
-把自研的 OpenAICompatibleLLM 包装为 langchain 聊天模型，使其能直接参与
-LCEL 链（prompt | model | parser），并支持 invoke / stream / batch 等标准接口。
-"""
-from __future__ import annotations
-
 from typing import Any, Iterator, List, Optional, Sequence
-
 from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage

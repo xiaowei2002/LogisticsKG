@@ -4,8 +4,6 @@
       → 命中实体 k 跳邻域子图 → 三元组上下文 → LCEL 链流式回答。
 实体向量缓存到 index_dir，二次启动秒级加载。
 """
-from __future__ import annotations
-
 import json
 from collections import deque
 from pathlib import Path

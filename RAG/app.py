@@ -2,8 +2,8 @@
 物流领域大模型对话系统 Web UI（Gradio）。
 
 两种问答模式一键切换，对比回答差异：
-- 使用 RAG    ：检索增强回答（文档 RAG + GraphRAG 融合；merge 图谱未构建时自动退化为纯文档检索）
-- 不使用 RAG  ：直接大模型回答（对照基线）
+- 使用 RAG    ：检索增强回答
+- 不使用 RAG  ：直接大模型回答
 """
 import argparse
 import sys
@@ -25,7 +25,6 @@ from RAG.utils.service import (  # noqa: E402
 
 MODE_NONE = "none"  # 不使用 RAG 的对照模式
 
-# 隐藏所有滚动条（保留鼠标滚轮/触摸滚动功能），并限制来源面板高度
 CUSTOM_CSS = """
 * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
 *::-webkit-scrollbar { width: 0; height: 0; display: none; }

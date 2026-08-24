@@ -1,13 +1,6 @@
-"""领域问答服务编排：统一封装 RAG、GraphRAG 与二者融合（hybrid）。
+"""领域问答服务编排：统一封装 RAG、GraphRAG。
 
-路由规则：
-- mode = "hybrid":   文档 RAG + GraphRAG 同时检索、融合上下文作答（merge 图谱未构建时退化为纯文档 RAG）
-- mode = "rag":      仅文档 RAG
-- mode = "graphrag": 仅 GraphRAG（需要 merge 知识图谱存在）
-- mode = "auto":     merge 知识图谱已构建 → GraphRAG；未构建 → 回退文档 RAG
 """
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Tuple
