@@ -36,33 +36,8 @@ def _normalize_model(model: Optional[str]) -> str:
     return model
 
 
-# ============ KG 生成成本估算常量（元 / 百万 token） ============
-# qwen 文本模型粗略价格，请按实际账单调整。
-KG_PRICE_INPUT_PER_MTOKEN = 1.6     # 输入约 ¥1.6 / 百万 token
-KG_PRICE_OUTPUT_PER_MTOKEN = 6.4    # 输出约 ¥6.4 / 百万 token
-KG_PROMPT_TOKENS_PER_CALL = 2000    # 每次调用 system prompt + 实体/格式约束的固定开销
-KG_OUTPUT_TOKENS_PER_CALL = 800     # 每次调用输出实体/关系列表的估算 token
-
 # 单分块实体数硬上限：防止过度抽取导致关系输入与去重成本爆炸。
 MAX_ENTITIES_PER_CHUNK = 150
-
-
-def estimate_kg_cost(chars: int, n_chunks: int) -> dict:
-    """按字符数与分块数估算 KG 生成阶段的 token 用量与花费（元）。"""
-    calls = n_chunks * 2  # 每块实体抽取 + 关系抽取两次调用
-    input_tokens = chars + calls * KG_PROMPT_TOKENS_PER_CALL
-    output_tokens = calls * KG_OUTPUT_TOKENS_PER_CALL
-    cost = (
-        input_tokens / 1_000_000 * KG_PRICE_INPUT_PER_MTOKEN
-        + output_tokens / 1_000_000 * KG_PRICE_OUTPUT_PER_MTOKEN
-    )
-    return {
-        "chunks": n_chunks,
-        "calls": calls,
-        "input_tokens": input_tokens,
-        "output_tokens": output_tokens,
-        "cost_yuan": round(cost, 2),
-    }
 
 
 def _cache_key(step: str, model: str, *parts: str) -> str:
@@ -286,7 +261,6 @@ class KGGen:
 
         cache = _LLMCache(Path(cache_dir) / "llm_cache.json" if cache_dir else None)
         effective_temp = temperature if temperature is not None else self.temperature
-        usage_before = self.extract_token_usage_from_history()
 
         def _extract(content):
             """抽取单个分块的实体与关系，优先命中磁盘缓存。"""
@@ -349,15 +323,6 @@ class KGGen:
             entities = set()
             relations = set()
 
-            est = estimate_kg_cost(len(processed_input), len(chunks))
-            logger.info(
-                "分块抽取：{} 块，预估输入 {:,} tok / 输出 {:,} tok，约 ¥{}",
-                len(chunks),
-                est["input_tokens"],
-                est["output_tokens"],
-                est["cost_yuan"],
-            )
-
             with tqdm(total=len(chunks), desc="分块抽取", unit="块") as pbar:
                 with ThreadPoolExecutor() as executor:
                     future_to_chunk = {
@@ -387,22 +352,6 @@ class KGGen:
         if output_folder:
             self.export_graph(graph, os.path.join(output_folder, "graph.json"))
 
-        usage_after = self.extract_token_usage_from_history()
-        prompt_delta = usage_after["prompt_tokens"] - usage_before["prompt_tokens"]
-        completion_delta = (
-            usage_after["completion_tokens"] - usage_before["completion_tokens"]
-        )
-        if prompt_delta or completion_delta:
-            cost = (
-                prompt_delta / 1_000_000 * KG_PRICE_INPUT_PER_MTOKEN
-                + completion_delta / 1_000_000 * KG_PRICE_OUTPUT_PER_MTOKEN
-            )
-            logger.info(
-                "本次生成实际用量：{:,} prompt / {:,} completion tok，约 ¥{:.2f}",
-                prompt_delta,
-                completion_delta,
-                cost,
-            )
         return graph
 
     def deduplicate(

@@ -121,7 +121,6 @@ def main() -> None:
     parser.add_argument("--vl-model", type=str, default=None, help="视觉模型名，缺省读取 OPENAI_VL_MODEL_NAME")
     parser.add_argument("--skip-pdf", action="store_true", help="跳过 PDF→JSON，直接用已有 JSON 建图谱")
     parser.add_argument("--force", action="store_true", help="忽略缓存，重新生成图谱")
-    parser.add_argument("--estimate-only", action="store_true", help="只估算 PDF→JSON 阶段花费")
     parser.add_argument("--upload-neo4j", action="store_true", help="生成完成后上传合并图谱到 Neo4j")
     parser.add_argument("--neo4j-clear", action="store_true", help="上传前清空 Neo4j 现有数据")
     args = parser.parse_args()
@@ -133,10 +132,8 @@ def main() -> None:
     # Stage 1: PDF → 结构化 JSON
     if not args.skip_pdf:
         pdf2json.process_folder(
-            args.input, str(output_dir), args.dpi, args.vl_model, args.estimate_only
+            args.input, str(output_dir), args.dpi, args.vl_model
         )
-        if args.estimate_only:
-            return
 
     # Stage 2: 结构化 JSON → 知识图谱
     graphs = build_graphs_from_json(output_dir, force=args.force)

@@ -37,7 +37,6 @@ python -m src.main                      # 全流程：PDF → JSON → 图谱
 python -m src.main --skip-pdf           # 跳过 PDF 解析，直接用已有 JSON 建图谱
 python -m src.main --skip-pdf           # 命中缓存时零 LLM 调用，直接可视化
 python -m src.main --force              # 忽略缓存，重新生成图谱
-python -m src.main --estimate-only      # 只估算 PDF→JSON 阶段的花费
 ```
 
 ## 输出

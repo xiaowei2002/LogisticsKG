@@ -9,7 +9,6 @@
 
 用法（在项目根目录）：
     python -m src.pdf2json --input pdfs --output output
-    python -m src.pdf2json --input pdfs --estimate-only   # 只估算花费，不调用模型
 """
 import argparse
 import base64
@@ -30,33 +29,6 @@ load_dotenv()
 
 # 视觉模型名：由 .env 中的 OPENAI_VL_MODEL_NAME 控制，缺省 qwen3-vl-plus
 DEFAULT_VL_MODEL = os.getenv("OPENAI_VL_MODEL_NAME", "qwen3-vl-plus")
-
-# ============ 成本估算常量（单位：元 / 百万 token） ============
-# 以下是 qwen-vl-max 的粗略价格，请按你实际使用的模型与账单调整。
-# 注意：图像 token 化数量随渲染分辨率（dpi）与版面密度变化，此处为经验估算，
-# 仅供参考，不构成精确报价。
-PRICE_INPUT_PER_MTOKEN = 3.0     # 输入（含图像 token 化）约 ¥3 / 百万 token
-PRICE_OUTPUT_PER_MTOKEN = 9.0    # 输出约 ¥9 / 百万 token
-TOKENS_PER_PAGE_IMAGE = 1500     # 单页图像（约 150 dpi）token 化后的估算输入 token
-PROMPT_TOKENS_PER_PAGE = 300     # 每页 system/user 文本 prompt 的固定开销
-TOKENS_PER_PAGE_OUTPUT = 800     # 单页结构化 JSON 的估算输出 token
-
-
-def estimate_cost(page_count: int) -> dict:
-    """按页数估算 token 用量与花费（元）。"""
-    input_tokens = page_count * (TOKENS_PER_PAGE_IMAGE + PROMPT_TOKENS_PER_PAGE)
-    output_tokens = page_count * TOKENS_PER_PAGE_OUTPUT
-    cost = (
-        input_tokens / 1_000_000 * PRICE_INPUT_PER_MTOKEN
-        + output_tokens / 1_000_000 * PRICE_OUTPUT_PER_MTOKEN
-    )
-    return {
-        "pages": page_count,
-        "input_tokens": input_tokens,
-        "output_tokens": output_tokens,
-        "cost_yuan": round(cost, 2),
-    }
-
 
 STRUCT_PROMPT = """你是一个文档结构化解析专家。这是某 PDF 文档的第 {page_no} 页（图片）。请识别页面内容并输出结构化 JSON。
 
@@ -162,7 +134,6 @@ def process_pdf(
     output_dir: str = "output",
     dpi: int = 150,
     vl_model: str | None = None,
-    estimate_only: bool = False,
     force: bool = False,
 ) -> dict | None:
     """处理单个 PDF：渲染→逐页 VLM 解析→组装→写 JSON。
@@ -172,29 +143,15 @@ def process_pdf(
     """
     doc = pymupdf.open(pdf_path)
     page_count = len(doc)
-    est = estimate_cost(page_count)
     stem = Path(pdf_path).stem
     out_path = Path(output_dir) / f"{stem}.json"
     checkpoint = Path(output_dir) / f"{stem}.pages.jsonl"
-
-    logger.info(
-        "文件: {}（{} 页）｜预估：输入 {:,} tok / 输出 {:,} tok，约 ¥{}",
-        Path(pdf_path).name,
-        page_count,
-        est["input_tokens"],
-        est["output_tokens"],
-        est["cost_yuan"],
-    )
 
     # 最终 JSON 已存在、无残留检查点、且非 force → 视为已完成，直接跳过
     if out_path.exists() and not checkpoint.exists() and not force:
         logger.info("已存在结构化 JSON，跳过解析: {}", out_path.name)
         doc.close()
         return json.loads(out_path.read_text(encoding="utf-8"))
-
-    if estimate_only:
-        doc.close()
-        return est
 
     # 从检查点恢复已完成的页；force 时丢弃旧检查点重新开始
     records: dict[int, dict] = {}
@@ -249,25 +206,9 @@ def process_folder(
     output_dir: str = "output",
     dpi: int = 150,
     vl_model: str | None = None,
-    estimate_only: bool = False,
 ):
     pdf_dir = Path(pdf_folder)
     pdf_files = sorted(pdf_dir.rglob("*.pdf"))
-    total_pages = 0
-    for pdf_path in pdf_files:
-        total_pages += len(pymupdf.open(str(pdf_path)))
-
-    est = estimate_cost(total_pages)
-    logger.info(
-        "共发现 {} 个 PDF、{} 页，预估总花费约 ¥{}（输入 {:,} tok / 输出 {:,} tok）",
-        len(pdf_files),
-        total_pages,
-        est["cost_yuan"],
-        est["input_tokens"],
-        est["output_tokens"],
-    )
-    if estimate_only:
-        return
 
     for pdf_path in pdf_files:
         process_pdf(str(pdf_path), output_dir, dpi, vl_model)
@@ -279,18 +220,13 @@ def main():
     parser.add_argument("--output", type=str, default="output", help="输出目录（默认 output）")
     parser.add_argument("--dpi", type=int, default=150, help="页面渲染分辨率（默认 150）")
     parser.add_argument("--model", type=str, default=None, help="视觉模型名，缺省读取 OPENAI_VL_MODEL_NAME")
-    parser.add_argument(
-        "--estimate-only",
-        action="store_true",
-        help="只统计页数并估算花费，不调用模型",
-    )
     args = parser.parse_args()
 
     input_path = Path(args.input)
     if input_path.is_dir():
-        process_folder(str(input_path), args.output, args.dpi, args.model, args.estimate_only)
+        process_folder(str(input_path), args.output, args.dpi, args.model)
     else:
-        process_pdf(str(input_path), args.output, args.dpi, args.model, args.estimate_only)
+        process_pdf(str(input_path), args.output, args.dpi, args.model)
 
 
 if __name__ == "__main__":
